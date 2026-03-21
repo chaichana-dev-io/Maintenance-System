@@ -4,66 +4,42 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>จัดการผู้ใช้งาน | เจริญกรุงคอนโดมิเนียม 3</title>
-  
   <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-   
   <script>
     const userData = JSON.parse(localStorage.getItem('ck3_user'));
-    if (!userData || (userData.role.toLowerCase() === 'resident' || userData.role.toLowerCase() === 'technician')) {
-      window.location.href = "../index.html"; 
-    }
+    if (!userData || (userData.role.toLowerCase() === 'resident' || userData.role.toLowerCase() === 'technician')) window.location.href = "../index.html";
     const ROLE = userData.role.toLowerCase();
-    // ⚠️ ตรวจสอบ URL GAS ของพี่ให้เป็นตัวล่าสุดเสมอ
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzwiXYmpUymZTepreVpuld-eHA1cbGWZ0ErLVtfD9Insvoo3chXwVsMywG3zjMcJFxZtA/exec";
   </script>
-
   <style>
     :root { --primary-blue: #1800ad; --deep-blue: #0c005a; --gold-primary: #d4af37; --gold-light: #f1e3a0; --sidebar-width: 280px; }
-    body { font-family: 'Prompt', sans-serif; background-color: #f4f7f6; margin: 0; overflow-x: hidden; }
-
-    /* Sidebar */
+    body { font-family: 'Prompt', sans-serif; background-color: #f4f7f6; margin: 0; }
     #sidebar { width: var(--sidebar-width); background: linear-gradient(180deg, var(--deep-blue) 0%, var(--primary-blue) 100%); color: white; position: fixed; height: 100vh; padding: 30px 15px; z-index: 1000; }
     .sidebar-brand { text-align: center; margin-bottom: 40px; }
-    .sidebar-brand img { max-width: 140px; filter: drop-shadow(0 0 15px rgba(212,175,55,0.4)); }
-    .logo-text { color: var(--gold-light); font-size: 1.1rem; font-weight: 500; margin-top: 10px; }
+    .sidebar-brand img { max-width: 140px; filter: drop-shadow(0 0 15px rgba(212, 175, 55, 0.4)); }
+    .logo-text { color: var(--gold-light); font-size: 1.1rem; margin-top: 10px; }
     .nav-item { padding: 14px 20px; color: rgba(255,255,255,0.7); text-decoration: none; display: flex; align-items: center; border-radius: 15px; margin-bottom: 8px; transition: 0.3s; cursor: pointer; }
-    .nav-item:hover { background: rgba(255, 255, 255, 0.1); color: var(--gold-light); }
-    .nav-item.active { background: var(--gold-primary); color: var(--deep-blue); font-weight: 600; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
-    .nav-item i { width: 25px; margin-right: 12px; font-size: 1.1rem; text-align: center; }
-
-    /* Main Content */
+    .nav-item.active { background: var(--gold-primary); color: var(--deep-blue); font-weight: 600; }
     #main-content { margin-left: var(--sidebar-width); padding: 40px; min-height: 100vh; display: flex; flex-direction: column; }
     .table-container { background: white; border-radius: 25px; padding: 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
-    
-    /* Buttons & States */
-    .btn-action { width: 38px; height: 38px; border-radius: 12px; border: none; margin: 2px; transition: 0.2s; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; }
-    .btn-edit { background: #e3f2fd; color: #1976d2; }
-    .btn-reset { background: #fff3e0; color: #f57c00; }
-    .btn-delete { background: #ffebee; color: #d32f2f; }
+    .btn-action { width: 38px; height: 38px; border-radius: 12px; border: none; margin: 2px; transition: 0.2s; display: inline-flex; align-items: center; justify-content: center; }
     .btn-action:hover { transform: scale(1.1); }
     button:disabled { opacity: 0.5; cursor: not-allowed !important; }
-
-    /* Luxury Modal */
     .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(12, 0, 90, 0.7); backdrop-filter: blur(8px); z-index: 10000; align-items: center; justify-content: center; opacity: 0; transition: 0.3s ease; }
     .modal-overlay.show { opacity: 1; display: flex; }
-    .modal-card { background: white; width: 95%; max-width: 480px; padding: 35px; border-radius: 35px; box-shadow: 0 25px 50px rgba(0,0,0,0.4); transform: scale(0.8); transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+    .modal-card { background: white; width: 95%; max-width: 480px; padding: 35px; border-radius: 35px; box-shadow: 0 25px 50px rgba(0,0,0,0.4); transform: scale(0.8); transition: 0.3s; }
     .modal-overlay.show .modal-card { transform: scale(1); }
-    
-    .form-control { border-radius: 12px; padding: 12px 15px; border: 1px solid #eee; background: #f9f9f9; width: 100%; margin-bottom: 15px; }
-    .form-control:focus { border-color: var(--gold-primary); background: white; outline: none; }
-    
-    .modal-icon { width: 70px; height: 70px; margin: 0 auto 20px; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
+    .form-control { border-radius: 12px; padding: 12px 15px; border: 1px solid #eee; background: #f9f9f9; margin-bottom: 15px; }
+    .modal-icon { width: 70px; height: 70px; margin: 0 auto 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: white; }
     .modal-icon.danger { background: #ff5252; }
     .modal-icon.warning { background: #fbc02d; }
     .modal-icon.primary { background: var(--primary-blue); }
-
     .footer { text-align: center; padding: 25px 0 10px 0; color: rgba(0,0,0,0.4); font-size: 0.85rem; margin-top: auto; }
   </style>
 </head>
 <body>
-
   <aside id="sidebar">
     <div class="sidebar-brand"><img src="https://img1.pic.in.th/images/logo310c09ae65f63ac1d.png" alt="Logo"><div class="logo-text">ระบบแจ้งซ่อม</div></div>
     <nav>
@@ -71,36 +47,22 @@
       <a href="../repairs/" class="nav-item"><i class="fas fa-tools"></i> งานแจ้งซ่อม</a>
       <a href="./" class="nav-item active"><i class="fas fa-users-cog"></i> จัดการผู้ใช้</a>
       <a href="../profile.html" class="nav-item"><i class="fas fa-user-circle"></i> ข้อมูลส่วนตัว</a>
-      <hr style="border-color: rgba(212,175,55,0.2); margin: 20px 0;">
-      <div class="nav-item text-warning" onclick="logout()"><i class="fas fa-sign-out-alt"></i> ออกจากระบบ</div>
+      <hr style="border-color: rgba(212,175,55,0.2); margin: 20px 0;"><div class="nav-item text-warning" onclick="logout()"><i class="fas fa-sign-out-alt"></i> ออกจากระบบ</div>
     </nav>
   </aside>
 
   <main id="main-content">
     <div class="content-wrapper">
-      <header class="header-top d-flex justify-content-between align-items-center">
-        <div><h2 style="color: var(--deep-blue); font-weight: 600; margin: 0;">จัดการบัญชีผู้ใช้งาน</h2><p class="text-muted mb-0">เจริญกรุงคอนโด อาคาร 3</p></div>
+      <header class="header-top d-flex justify-content-between align-items-center mb-4">
+        <div><h2 style="color: var(--deep-blue); font-weight: 600; margin: 0;">จัดการผู้ใช้งาน</h2><p class="text-muted mb-0">อาคาร 3</p></div>
         <div class="admin-profile"><i class="fas fa-user-shield me-2 text-primary"></i> <span id="admin-role-name"></span></div>
       </header>
-
       <div class="d-flex justify-content-end mb-4">
-        <button class="btn btn-primary px-4 py-2 border-0 shadow-sm" style="border-radius:12px; background: var(--primary-blue);" onclick="openModal('add-user-modal')">
-          <i class="fas fa-plus me-2"></i> เพิ่มผู้ใช้ใหม่
-        </button>
+        <button class="btn btn-primary px-4 py-2 border-0 shadow-sm" style="border-radius:12px; background: var(--primary-blue);" onclick="openModal('add-user-modal')"><i class="fas fa-plus me-2"></i> เพิ่มผู้ใช้ใหม่</button>
       </div>
-
-      <div class="table-container">
-        <table class="table align-middle">
-          <thead>
-            <tr class="text-muted"><th>ID</th><th>Username</th><th>ชื่อ-นามสกุล</th><th>บทบาท</th><th class="text-center">จัดการ</th></tr>
-          </thead>
-          <tbody id="user-table-body">
-            <tr><td colspan="5" class="text-center py-5"><div class="spinner-border text-primary"></div></td></tr>
-          </tbody>
-        </table>
-      </div>
+      <div class="table-container"><table class="table align-middle"><thead><tr class="text-muted"><th>ID</th><th>Username</th><th>ชื่อ-นามสกุล</th><th>บทบาท</th><th class="text-center">จัดการ</th></tr></thead><tbody id="user-table-body"><tr><td colspan="5" class="text-center py-5"><div class="spinner-border text-primary"></div></td></tr></tbody></table></div>
     </div>
-    <footer class="footer">© 2026 Charoen Krung Condominium 3 | บริหารจัดการโดยนิติบุคคล</footer>
+    <footer class="footer">© 2026 Charoen Krung Condominium 3</footer>
   </main>
 
   <div id="add-user-modal" class="modal-overlay">
@@ -112,10 +74,7 @@
         <input type="text" id="new-username" class="form-control" placeholder="เลขห้อง หรือ Username" autocomplete="off" spellcheck="false">
         <input type="text" id="new-fullname" class="form-control" placeholder="ชื่อ-นามสกุล" autocomplete="off" spellcheck="false">
         <input type="text" id="new-phone" class="form-control" placeholder="เบอร์โทรศัพท์" autocomplete="off" spellcheck="false">
-        <div class="d-flex gap-2 mt-3">
-          <button class="btn btn-light flex-grow-1 py-2" style="border-radius:12px" onclick="closeModal('add-user-modal')">ยกเลิก</button>
-          <button id="btn-submit-add" class="btn btn-primary flex-grow-1 py-2 border-0" style="border-radius:12px; background: var(--primary-blue);" onclick="submitNewUser()">บันทึก</button>
-        </div>
+        <div class="d-flex gap-2 mt-3"><button class="btn btn-light flex-grow-1" onclick="closeModal('add-user-modal')">ยกเลิก</button><button id="btn-submit-add" class="btn btn-primary flex-grow-1 border-0" style="background: var(--primary-blue);" onclick="submitNewUser()">บันทึก</button></div>
       </div>
     </div>
   </div>
@@ -123,15 +82,11 @@
   <div id="edit-user-modal" class="modal-overlay">
     <div class="modal-card text-start">
       <div class="modal-icon warning"><i class="fas fa-user-edit"></i></div>
-      <h3 class="fw-bold mb-4 text-center" style="color: var(--deep-blue);">แก้ไขข้อมูล</h3>
-      <input type="hidden" id="edit-id">
-      <input type="text" id="edit-id-display" class="form-control" disabled>
-      <input type="text" id="edit-fullname" class="form-control" placeholder="ชื่อ-นามสกุล" autocomplete="off" spellcheck="false">
-      <input type="text" id="edit-phone" class="form-control" placeholder="เบอร์โทรศัพท์" autocomplete="off" spellcheck="false">
-      <div class="d-flex gap-2 mt-3">
-        <button class="btn btn-light flex-grow-1 py-2" style="border-radius:12px" onclick="closeModal('edit-user-modal')">ยกเลิก</button>
-        <button id="btn-submit-edit" class="btn btn-primary flex-grow-1 py-2 border-0" style="border-radius:12px; background: var(--primary-blue);" onclick="submitEditUser()">บันทึกแก้ไข</button>
-      </div>
+      <h3 class="fw-bold mb-4 text-center">แก้ไขข้อมูล</h3>
+      <input type="hidden" id="edit-id"><input type="text" id="edit-id-display" class="form-control" disabled>
+      <input type="text" id="edit-fullname" class="form-control" autocomplete="off" spellcheck="false">
+      <input type="text" id="edit-phone" class="form-control" autocomplete="off" spellcheck="false">
+      <div class="d-flex gap-2 mt-3"><button class="btn btn-light flex-grow-1" onclick="closeModal('edit-user-modal')">ยกเลิก</button><button id="btn-submit-edit" class="btn btn-primary flex-grow-1 border-0" style="background: var(--primary-blue);" onclick="submitEditUser()">บันทึกแก้ไข</button></div>
     </div>
   </div>
 
@@ -141,36 +96,19 @@
       <h4 id="lux-title" class="fw-bold"></h4>
       <p id="lux-message" class="text-muted mb-4"></p>
       <div class="d-flex gap-2 justify-content-center">
-        <button class="btn btn-light px-4" style="border-radius:12px" onclick="closeModal('lux-modal')">ยกเลิก</button>
-        <button id="lux-confirm" class="btn btn-primary px-4 border-0" style="border-radius:12px; background: var(--primary-blue);">ตกลง</button>
+        <button id="lux-cancel" class="btn btn-light px-4" onclick="closeModal('lux-modal')">ยกเลิก</button>
+        <button id="lux-confirm" class="btn btn-primary px-4 border-0" style="background: var(--primary-blue);">ตกลง</button>
       </div>
     </div>
   </div>
 
   <script>
     let modalAction = null;
-
     document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('admin-role-name').innerText = ROLE.toUpperCase();
-      const roleSelect = document.getElementById('new-role');
-      roleSelect.innerHTML = (ROLE === 'super_admin' ? '<option value="super_admin">Super Admin</option><option value="admin">Admin</option>' : '') + 
-                              '<option value="technician">Technician</option><option value="resident">Resident</option>';
+      const rs = document.getElementById('new-role');
+      rs.innerHTML = (ROLE === 'super_admin' ? '<option value="super_admin">Super Admin</option><option value="admin">Admin</option>' : '') + '<option value="technician">Technician</option><option value="resident">Resident</option>';
       fetchUsers();
-
-      // ⌨️ Keyboard Listeners (เบื้องหลัง)
-      window.addEventListener('keydown', (e) => {
-        const activeModal = document.querySelector('.modal-overlay.show');
-        if (!activeModal) return;
-
-        if (e.key === 'Escape') {
-          const cancelBtn = activeModal.querySelector('button.btn-light');
-          if (cancelBtn) cancelBtn.click();
-        }
-        if (e.key === 'Enter') {
-          const confirmBtn = activeModal.querySelector('button.btn-primary');
-          if (confirmBtn && !confirmBtn.disabled) confirmBtn.click();
-        }
-      });
     });
 
     async function fetchUsers() {
@@ -181,9 +119,9 @@
         if (r.success) {
           tbody.innerHTML = '';
           r.users.forEach(u => {
-            let btns = `<button class="btn-action btn-edit" onclick="openEditModal('${u[0]}','${u[3]}','${u[4]}')"><i class="fas fa-pen"></i></button>`;
-            if (ROLE === 'super_admin') btns += `<button class="btn-action btn-reset" onclick="resetPw('${u[0]}','${u[1]}')"><i class="fas fa-key"></i></button>`;
-            btns += `<button class="btn-action btn-delete" onclick="deleteU('${u[0]}','${u[3]}')"><i class="fas fa-trash"></i></button>`;
+            let btns = `<button class="btn-action btn-edit" style="background:#e3f2fd;color:#1976d2" onclick="openEditModal('${u[0]}','${u[3]}','${u[4]}')"><i class="fas fa-pen"></i></button>`;
+            if (ROLE === 'super_admin') btns += `<button class="btn-action btn-reset" style="background:#fff3e0;color:#f57c00" onclick="resetPw('${u[0]}','${u[1]}')"><i class="fas fa-key"></i></button>`;
+            btns += `<button class="btn-action btn-delete" style="background:#ffebee;color:#d32f2f" onclick="deleteU('${u[0]}','${u[3]}')"><i class="fas fa-trash"></i></button>`;
             tbody.innerHTML += `<tr><td><small>${u[0]}</small></td><td><strong>${u[1]}</strong></td><td>${u[3]}</td><td><span class="badge ${u[5]==='resident'?'bg-info text-dark':'bg-dark'} px-3">${u[5]}</span></td><td class="text-center">${btns}</td></tr>`;
           });
         }
@@ -193,79 +131,74 @@
     async function submitNewUser() {
       const btn = document.getElementById('btn-submit-add');
       const data = { action: "createUser", callerRole: ROLE, role: document.getElementById('new-role').value, username: document.getElementById('new-username').value, fullName: document.getElementById('new-fullname').value, phone: document.getElementById('new-phone').value };
-      if (!data.username || !data.fullName) return alert("กรุณากรอกข้อมูล");
-
-      btn.disabled = true; // 🔒 ป้องกันกดซ้ำ
-      const res = await fetch(WEB_APP_URL, { method: "POST", body: JSON.stringify(data) });
-      const r = await res.json();
-      btn.disabled = false;
-      if(r.success) { 
-        document.querySelectorAll('#add-user-modal input').forEach(i => i.value = '');
-        closeModal('add-user-modal'); fetchUsers(); 
-      }
-      alert(r.message);
-    }
-
-    function openEditModal(id, name, phone) {
-      document.getElementById('edit-id').value = id;
-      document.getElementById('edit-id-display').value = id;
-      document.getElementById('edit-fullname').value = name;
-      document.getElementById('edit-phone').value = phone;
-      openModal('edit-user-modal');
+      if (!data.username || !data.fullName) return showNotice("ข้อมูลไม่ครบ", "กรุณาระบุข้อมูลหลักให้ครบ", "warning");
+      btn.disabled = true;
+      try {
+        const res = await fetch(WEB_APP_URL, { method: "POST", body: JSON.stringify(data) });
+        const r = await res.json();
+        if(r.success) { document.querySelectorAll('#add-user-modal input').forEach(i => i.value = ''); closeModal('add-user-modal'); fetchUsers(); showNotice("สำเร็จ", r.message, "primary"); }
+        else showNotice("ไม่สำเร็จ", r.message, "danger");
+      } finally { btn.disabled = false; }
     }
 
     async function submitEditUser() {
       const btn = document.getElementById('btn-submit-edit');
       const data = { action: "updateUser", callerRole: ROLE, userId: document.getElementById('edit-id').value, fullName: document.getElementById('edit-fullname').value, phone: document.getElementById('edit-phone').value };
-      btn.disabled = true; // 🔒 ป้องกันกดซ้ำ
-      const res = await fetch(WEB_APP_URL, { method: "POST", body: JSON.stringify(data) });
-      const r = await res.json();
-      btn.disabled = false;
-      if(r.success) { closeModal('edit-user-modal'); fetchUsers(); }
-      alert(r.message);
+      btn.disabled = true;
+      try {
+        const res = await fetch(WEB_APP_URL, { method: "POST", body: JSON.stringify(data) });
+        const r = await res.json();
+        if(r.success) { closeModal('edit-user-modal'); fetchUsers(); showNotice("สำเร็จ", r.message, "primary"); }
+        else showNotice("ไม่สำเร็จ", r.message, "danger");
+      } finally { btn.disabled = false; }
     }
 
-    function deleteU(id, name) {
-      openLuxModal({
-        title: "ลบผู้ใช้ถาวร?", message: `ยืนยันการลบคุณ ${name} (${id})?`, type: "danger",
-        onConfirm: async () => {
-          const btn = document.getElementById('lux-confirm');
-          btn.disabled = true;
-          const res = await fetch(WEB_APP_URL, { method: "POST", body: JSON.stringify({ action: "deleteUser", userId: id, callerRole: ROLE }) });
-          const r = await res.json();
-          btn.disabled = false;
-          if(r.success) fetchUsers();
-          alert(r.message);
-        }
-      });
+    function showNotice(title, msg, type, onConfirm = null) {
+      const m = document.getElementById('lux-modal');
+      document.getElementById('lux-title').innerText = title;
+      document.getElementById('lux-message').innerText = msg;
+      document.getElementById('lux-icon-box').className = 'modal-icon ' + type;
+      document.getElementById('lux-icon').className = 'fas ' + (type === 'danger' ? 'fa-exclamation-triangle' : 'fa-check');
+      document.getElementById('lux-cancel').style.display = 'none';
+      m.style.display = 'flex';
+      setTimeout(() => m.classList.add('show'), 10);
+      modalAction = onConfirm;
     }
 
-    function resetPw(id, name) {
-      openLuxModal({
-        title: "รีเซ็ตรหัสผ่าน?", message: `รีเซ็ตรหัสของ ${name} เป็นค่าเริ่มต้น?`, type: "warning",
-        onConfirm: async () => {
-          const btn = document.getElementById('lux-confirm');
-          btn.disabled = true;
-          const res = await fetch(WEB_APP_URL, { method: "POST", body: JSON.stringify({ action: "resetPassword", userId: id, callerRole: ROLE }) });
-          const r = await res.json();
-          btn.disabled = false;
-          alert(r.message);
-        }
-      });
-    }
-
-    function openModal(id) { const m = document.getElementById(id); m.style.display = 'flex'; setTimeout(() => m.classList.add('show'), 10); }
-    function closeModal(id) { const m = document.getElementById(id); m.classList.remove('show'); setTimeout(() => m.style.display = 'none', 300); }
     function openLuxModal(opts) {
+      const m = document.getElementById('lux-modal');
       document.getElementById('lux-title').innerText = opts.title;
       document.getElementById('lux-message').innerText = opts.message;
-      document.getElementById('lux-icon-box').className = 'modal-icon ' + (opts.type === 'danger' ? 'danger' : 'warning');
-      document.getElementById('lux-icon').className = 'fas ' + (opts.type === 'danger' ? 'fa-trash-alt' : 'fa-key');
-      openModal('lux-modal');
+      document.getElementById('lux-icon-box').className = 'modal-icon ' + (opts.type || 'primary');
+      document.getElementById('lux-icon').className = 'fas fa-question';
+      document.getElementById('lux-cancel').style.display = 'block';
+      m.style.display = 'flex';
+      setTimeout(() => m.classList.add('show'), 10);
       modalAction = opts.onConfirm;
     }
-    document.getElementById('lux-confirm').onclick = () => { if(modalAction) modalAction(); closeModal('lux-modal'); };
+
+    function closeLuxModal() { const m = document.getElementById('lux-modal'); m.classList.remove('show'); setTimeout(() => m.style.display = 'none', 300); }
+    document.getElementById('lux-confirm').onclick = () => { if(modalAction) modalAction(); closeLuxModal(); };
+
+    function openEditModal(id, name, phone) { document.getElementById('edit-id').value = id; document.getElementById('edit-id-display').value = id; document.getElementById('edit-fullname').value = name; document.getElementById('edit-phone').value = phone; openModal('edit-user-modal'); }
+    function deleteU(id, name) { openLuxModal({ title: "ลบถาวร?", message: `ยืนยันการลบคุณ ${name} (${id})?`, type: "danger", onConfirm: async () => { const res = await fetch(WEB_APP_URL, { method: "POST", body: JSON.stringify({ action: "deleteUser", userId: id, callerRole: ROLE }) }); const r = await res.json(); fetchUsers(); showNotice("ลบแล้ว", r.message, "primary"); } }); }
+    function resetPw(id, name) { openLuxModal({ title: "รีเซ็ตรหัส?", message: `คืนค่ารหัสของ ${name}?`, type: "warning", onConfirm: async () => { const res = await fetch(WEB_APP_URL, { method: "POST", body: JSON.stringify({ action: "resetPassword", userId: id, callerRole: ROLE }) }); const r = await res.json(); showNotice("รีเซ็ตแล้ว", r.message, "primary"); } }); }
+    function openModal(id) { const m = document.getElementById(id); m.style.display = 'flex'; setTimeout(() => m.classList.add('show'), 10); }
+    function closeModal(id) { const m = document.getElementById(id); m.classList.remove('show'); setTimeout(() => m.style.display = 'none', 300); }
     function logout() { localStorage.removeItem('ck3_user'); window.location.href = "../index.html"; }
+
+    window.addEventListener('keydown', (e) => {
+      const active = document.querySelector('.modal-overlay.show');
+      if (!active) return;
+      if (e.key === 'Escape') {
+        const can = active.querySelector('#lux-cancel') || active.querySelector('button.btn-light');
+        if (can && can.style.display !== 'none') can.click(); else closeModal(active.id);
+      }
+      if (e.key === 'Enter') {
+        const ok = active.querySelector('#lux-confirm') || active.querySelector('button.btn-primary');
+        if (ok && !ok.disabled) ok.click();
+      }
+    });
   </script>
 </body>
 </html>
