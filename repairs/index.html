@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>รายการแจ้งซ่อม | เจริญกรุงคอนโดมิเนียม 3</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  
+  <script>
+    const userData = JSON.parse(localStorage.getItem('ck3_user'));
+    // เช็คสิทธิ: Resident ห้ามเข้าหน้านี้
+    if (!userData || (userData.role.toLowerCase() === 'resident')) {
+      window.location.href = "../index.html"; 
+    }
+    const ROLE = userData.role.toLowerCase();
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbx4p9vecJqsvZGmSlRE-LAPYNC2MvKmzai0uLjSNCkDp73T_NgW11bWD9Qa6z-G3xTdJw/exec";
+  </script>
+
+  <style>
+    :root { --primary-blue: #1800ad; --deep-blue: #0c005a; --gold-primary: #d4af37; --gold-light: #f1e3a0; --sidebar-width: 280px; }
+    body { font-family: 'Prompt', sans-serif; background-color: #f4f7f6; margin: 0; }
+
+    /* Sidebar - Path ../ ออกไปหาไฟล์หลัก */
+    #sidebar { width: var(--sidebar-width); background: linear-gradient(180deg, var(--deep-blue) 0%, var(--primary-blue) 100%); color: white; position: fixed; height: 100vh; padding: 30px 15px; z-index: 1000; }
+    .sidebar-brand { text-align: center; margin-bottom: 40px; }
+    .sidebar-brand img { max-width: 140px; filter: drop-shadow(0 0 15px rgba(212,175,55,0.4)); }
+    .logo-text { color: var(--gold-light); font-size: 1.1rem; font-weight: 500; margin-top: 12px; }
+
+    .nav-item { padding: 14px 20px; color: rgba(255,255,255,0.7); text-decoration: none; display: flex; align-items: center; border-radius: 15px; margin-bottom: 8px; transition: 0.3s; cursor: pointer; }
+    .nav-item:hover { background: rgba(255, 255, 255, 0.1); color: var(--gold-light); }
+    .nav-item.active { background: var(--gold-primary); color: var(--deep-blue); font-weight: 600; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+    .nav-item i { width: 25px; margin-right: 12px; font-size: 1.1rem; text-align: center; }
+
+    /* Main Content */
+    #main-content { margin-left: var(--sidebar-width); padding: 40px; min-height: 100vh; display: flex; flex-direction: column; }
+    .content-wrapper { flex: 1; }
+
+    /* Filter Bar */
+    .filter-card { background: white; border-radius: 20px; padding: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); margin-bottom: 25px; border: 1px solid #eee; }
+
+    /* Repair Table Custom */
+    .table-container { background: white; border-radius: 25px; padding: 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
+    .badge-priority { border-radius: 8px; padding: 5px 12px; font-weight: 500; font-size: 0.75rem; }
+    .p-high { background: #ffebee; color: #d32f2f; }   /* เร่งด่วน */
+    .p-medium { background: #fff3e0; color: #f57c00; } /* ปกติ */
+    .p-low { background: #e8f5e9; color: #2e7d32; }    /* ทั่วไป */
+
+    .status-pill { border-radius: 20px; padding: 6px 15px; font-size: 0.8rem; font-weight: 500; }
+    
+    .btn-action-sm { width: 32px; height: 32px; border-radius: 8px; border: none; transition: 0.2s; display: inline-flex; align-items: center; justify-content: center; margin: 0 2px; }
+    .btn-view { background: #f0f4ff; color: var(--primary-blue); }
+
+    .footer { text-align: center; padding: 25px 0 10px 0; color: rgba(0,0,0,0.4); font-size: 0.85rem; margin-top: auto; }
+  </style>
+</head>
+<body>
+
+  <aside id="sidebar">
+    <div class="sidebar-brand">
+      <img src="https://img1.pic.in.th/images/logo310c09ae65f63ac1d.png" alt="Logo">
+      <div class="logo-text">ระบบแจ้งซ่อม</div>
+    </div>
+    <nav>
+      <a href="../admin.html" class="nav-item"><i class="fas fa-th-large"></i> แดชบอร์ด</a>
+      <a href="./" class="nav-item active"><i class="fas fa-tools"></i> งานแจ้งซ่อม</a>
+      <script>
+        if (ROLE === 'super_admin' || ROLE === 'admin') {
+          document.write('<a href="../users/" class="nav-item"><i class="fas fa-users-cog"></i> จัดการผู้ใช้</a>');
+        }
+      </script>
+      <a href="../profile.html" class="nav-item"><i class="fas fa-user-circle"></i> ข้อมูลส่วนตัว</a>
+      <hr style="border-color: rgba(212,175,55,0.2); margin: 20px 0;">
+      <div class="nav-item text-warning" onclick="logout()"><i class="fas fa-sign-out-alt"></i> ออกจากระบบ</div>
+    </nav>
+  </aside>
+
+  <main id="main-content">
+    <div class="content-wrapper">
+      <header class="header-top">
+        <div>
+          <h2 style="color: var(--deep-blue); font-weight: 600; margin: 0;">รายการแจ้งซ่อม</h2>
+          <p class="text-muted mb-0">ติดตามและจัดการสถานะงานซ่อมบำรุง</p>
+        </div>
+        <div class="admin-profile"><i class="fas fa-hard-hat me-2 text-warning"></i> <span id="admin-name-span"></span></div>
+      </header>
+
+      <div class="filter-card">
+        <div class="row g-3">
+          <div class="col-md-3">
+            <label class="small text-muted mb-1">สถานะงาน</label>
+            <select class="form-select border-0 bg-light" id="filter-status" style="border-radius:10px">
+              <option value="all">ทั้งหมด</option>
+              <option value="pending">รอดำเนินการ</option>
+              <option value="progress">กำลังซ่อม</option>
+              <option value="done">เสร็จสิ้น</option>
+            </select>
+          </div>
+          <div class="col-md-6"></div>
+          <div class="col-md-3 d-flex align-items-end">
+            <button class="btn btn-primary w-100" style="border-radius:12px; background: var(--primary-blue);" onclick="fetchRepairs()">
+              <i class="fas fa-sync-alt me-2"></i> รีเฟรชข้อมูล
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div class="table-container">
+        <div class="table-responsive">
+          <table class="table align-middle table-hover">
+            <thead>
+              <tr class="text-muted small">
+                <th>JOB ID</th>
+                <th>ห้อง</th>
+                <th>อาการที่แจ้ง</th>
+                <th>ความสำคัญ</th>
+                <th>สถานะ</th>
+                <th>ผู้รับผิดชอบ</th>
+                <th class="text-center">จัดการ</th>
+              </tr>
+            </thead>
+            <tbody id="repair-table-body">
+              <tr>
+                <td><small>#6901</small></td>
+                <td><strong>302</strong></td>
+                <td>ท่อน้ำรั่วซึมใต้ซิงค์ล้างจาน</td>
+                <td><span class="badge-priority p-high">เร่งด่วน</span></td>
+                <td><span class="status-pill bg-danger text-white">รอดำเนินการ</span></td>
+                <td>-</td>
+                <td class="text-center">
+                  <button class="btn-action-sm btn-view" onclick="viewDetail('6901')"><i class="fas fa-eye"></i></button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <footer class="footer">
+      © 2026 Charoen Krung Condominium 3 | บริหารจัดการโดยนิติบุคคล
+    </footer>
+  </main>
+
+  <script>
+    document.getElementById('admin-name-span').innerText = userData.full_name;
+
+    async function fetchRepairs() {
+      const tbody = document.getElementById('repair-table-body');
+      tbody.innerHTML = '<tr><td colspan="7" class="text-center py-5"><div class="spinner-border spinner-border-sm text-primary"></div> กำลังโหลดงานซ่อม...</td></tr>';
+      
+      // ตรงนี้จะเขียนเชื่อมต่อ API fetchRepairs ในภายหลังครับ
+    }
+
+    function logout() {
+      if(confirm("ต้องการออกจากระบบใช่หรือไม่?")) {
+        localStorage.removeItem('ck3_user');
+        window.location.href = "../index.html";
+      }
+    }
+
+    function viewDetail(id) {
+      alert("กำลังเปิดดูรายละเอียดงานที่ " + id);
+    }
+  </script>
+</body>
+</html>
