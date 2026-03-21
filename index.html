@@ -14,11 +14,11 @@
       --deep-blue: #0c005a;
       --gold-primary: #d4af37;
       --gold-light: #f1e3a0;
+      --glass-bg: rgba(255, 255, 255, 0.1);
     }
 
     body {
       font-family: 'Prompt', sans-serif;
-      /* พื้นหลังไล่เฉดน้ำเงินเข้มให้ดูมีมิติ */
       background: radial-gradient(circle at center, var(--primary-blue) 0%, var(--deep-blue) 100%);
       margin: 0;
       min-height: 100vh;
@@ -26,147 +26,167 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      padding: 20px;
+      overflow: hidden;
     }
 
-    /* คอนเทนเนอร์แบบไร้กรอบ */
+    /* --- Login Wrapper --- */
     .login-wrapper {
       width: 100%;
       max-width: 380px;
       text-align: center;
-      animation: fadeIn 1s ease-in-out;
+      animation: fadeIn 1s ease-out;
+      z-index: 10;
     }
 
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-10px); }
+      from { opacity: 0; transform: translateY(20px); }
       to { opacity: 1; transform: translateY(0); }
     }
 
-    .logo-container {
-      margin-bottom: 20px;
-    }
     .logo-container img {
-      max-width: 300px;
-      height: auto;
+      max-width: 280px;
       filter: drop-shadow(0 0 15px rgba(212, 175, 55, 0.4));
+      margin-bottom: 20px;
     }
 
     .system-title {
-      font-size: 1.5rem;
-      font-weight: 400;
+      font-size: 1.6rem;
       color: var(--gold-light);
-      margin-bottom: 0px;
+      margin-bottom: 30px;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.5);
       letter-spacing: 1px;
-      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
     }
 
-    /* ปรับแต่ง Form Group */
-    .form-group {
-      text-align: left;
-      margin-bottom: 20px;
-    }
-    .form-label {
-      color: var(--gold-primary);
-      font-size: 0.9rem;
-      margin-left: 5px;
-      margin-bottom: 8px;
-    }
+    /* --- Form Styling --- */
     .form-control-lg {
-      background: rgba(255, 255, 255, 0.05); /* โปร่งใส */
-      border: 1px solid rgba(212, 175, 55, 0.5); /* แก้ไขตรงนี้: เพิ่มความชัดเจนของสีทอง */
+      background: var(--glass-bg);
+      border: 1px solid rgba(212, 175, 55, 0.5);
       color: white;
       border-radius: 12px;
       padding: 12px 20px;
-      transition: all 0.3s ease;
+      transition: 0.3s;
     }
     .form-control-lg:focus {
-      background: rgba(255, 255, 255, 0.1);
+      background: rgba(255, 255, 255, 0.15);
       border-color: var(--gold-primary);
-      box-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
+      box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
       color: white;
     }
-    .form-control-lg::placeholder {
-      color: rgba(255, 255, 255, 0.3);
-    }
+    .form-label { color: var(--gold-primary); font-size: 0.85rem; margin-bottom: 8px; margin-left: 5px; text-align: left; display: block; }
 
-    /* ปุ่ม Login ทองอร่าม */
     .btn-login {
       background: linear-gradient(135deg, #d4af37 0%, #b8962c 100%);
       border: none;
       color: var(--deep-blue);
-      padding: 15px;
-      border-radius: 15px;
+      padding: 14px;
+      border-radius: 12px;
       font-weight: 600;
       width: 100%;
-      margin-top: 15px;
-      font-size: 1.1rem;
-      text-transform: uppercase;
+      margin-top: 10px;
       letter-spacing: 2px;
-      box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
       transition: 0.3s;
     }
-    .btn-login:hover {
-      background: linear-gradient(135deg, #f1e3a0 0%, #d4af37 100%);
-      transform: scale(1.02);
-      box-shadow: 0 12px 25px rgba(212, 175, 55, 0.3);
-    }
+    .btn-login:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(212, 175, 55, 0.4); color: var(--deep-blue); }
 
-    /* Footer แบบ Fade-in */
-    .footer {
-      position: fixed;
-      bottom: 30px;
-      font-size: 0.8rem;
-      color: rgba(255, 255, 255, 0.4);
-      text-align: center;
-      width: 100%;
-      opacity: 0;
-      animation: fadeInFooter 1.5s ease forwards;
-      animation-delay: 0.6s;
-    }
-
-    @keyframes fadeInFooter {
-      to { opacity: 1; }
-    }
-
-    #loader {
+    /* --- Loading Overlay (จางลง + วงหมุนด้านบน) --- */
+    #loader-overlay {
       display: none;
       position: fixed;
       top: 0; left: 0; width: 100%; height: 100%;
-      background: var(--deep-blue);
+      background: rgba(12, 0, 90, 0.85); /* จางลงแบบน้ำเงินเข้ม */
+      backdrop-filter: blur(5px);
       z-index: 9999;
       flex-direction: column;
+      align-items: center;
+      justify-content: flex-start; /* ให้วงหมุนอยู่ด้านบน */
+      padding-top: 15vh;
+    }
+    .spinner-gold {
+      width: 60px; height: 60px;
+      border: 5px solid rgba(212, 175, 55, 0.2);
+      border-top: 5px solid var(--gold-primary);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+    /* --- Welcome Popup (Custom Modal) --- */
+    #welcome-popup {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: 10000;
       align-items: center; justify-content: center;
     }
-    .spinner-border { color: var(--gold-primary); }
-    #app-container { display: none; width: 100%; }
+    .popup-content {
+      background: linear-gradient(145deg, var(--deep-blue), #1a004d);
+      border: 2px solid var(--gold-primary);
+      border-radius: 25px;
+      padding: 40px;
+      text-align: center;
+      max-width: 340px;
+      width: 90%;
+      transform: scale(0.8);
+      opacity: 0;
+      transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+    }
+    .popup-content.show { transform: scale(1); opacity: 1; }
+    .popup-content i { color: var(--gold-primary); font-size: 4rem; margin-bottom: 20px; }
+    .popup-title { color: var(--gold-light); font-size: 1.8rem; margin-bottom: 10px; }
+    .popup-name { color: white; font-size: 1.2rem; margin-bottom: 25px; font-weight: 300; }
+    .btn-confirm {
+      background: var(--gold-primary);
+      color: var(--deep-blue);
+      border: none;
+      padding: 10px 40px;
+      border-radius: 30px;
+      font-weight: 600;
+      transition: 0.3s;
+    }
+    .btn-confirm:hover { background: var(--gold-light); transform: scale(1.05); }
+
+    .footer { position: fixed; bottom: 20px; color: rgba(255,255,255,0.3); font-size: 0.75rem; }
+    #app-container { display: none; width: 100%; min-height: 100vh; background: #f4f7f6; }
   </style>
 </head>
 <body>
 
-  <div id="loader">
-    <div class="spinner-border mb-3" style="width: 3rem; height: 3rem;"></div>
-    <div style="color: var(--gold-light)">กำลังเข้าสู่ระบบ...</div>
+  <div id="loader-overlay">
+    <div class="spinner-gold mb-3"></div>
+    <div style="color: var(--gold-light); letter-spacing: 2px;">กำลังประมวลผล...</div>
+  </div>
+
+  <div id="welcome-popup">
+    <div class="popup-content" id="popup-inner">
+      <div class="mb-3">
+        <img src="https://img1.pic.in.th/images/logo310c09ae65f63ac1d.png" width="120" alt="Logo">
+      </div>
+      <div class="popup-title">ยินดีต้อนรับ</div>
+      <div class="popup-name">คุณ <span id="user-display-name"></span></div>
+      <div class="text-white-50 mb-4" style="font-weight: 300;">เข้าสู่ระบบแจ้งซ่อมสำเร็จ</div>
+      <button class="btn-confirm" id="btn-start">เริ่มต้นใช้งาน</button>
+    </div>
   </div>
 
   <div id="login-page" class="login-wrapper">
     <div class="logo-container">
-      <img src="https://img1.pic.in.th/images/logo310c09ae65f63ac1d.png" alt="เจริญกรุงคอนโดมิเนียม 3 Logo">
+      <img src="https://img1.pic.in.th/images/logo310c09ae65f63ac1d.png" alt="Logo">
     </div>
-
-    <div class="system-title">
-      ระบบแจ้งซ่อม
-    </div>
-
+    <div class="system-title">ระบบจัดการงานซ่อม</div>
+    
     <form id="loginForm">
-      <div class="form-group">
+      <div class="mb-3 text-start">
         <label class="form-label">USERNAME</label>
-        <input type="text" id="userInput" class="form-control form-control-lg" placeholder="ระบุชื่อผู้ใช้งาน" required autocomplete="username">
+        <input type="text" id="userInput" class="form-control form-control-lg" placeholder="ระบุชื่อผู้ใช้งาน" required>
       </div>
-      <div class="form-group">
+      <div class="mb-4 text-start">
         <label class="form-label">PASSWORD</label>
-        <input type="password" id="passInput" class="form-control form-control-lg" placeholder="ระบุรหัสผ่าน" required autocomplete="current-password">
+        <input type="password" id="passInput" class="form-control form-control-lg" placeholder="ระบุรหัสผ่าน" required>
       </div>
-      <button type="submit" class="btn-login">LOGIN</button>
+      <button type="submit" class="btn-login">เข้าสู่ระบบ</button>
     </form>
   </div>
 
@@ -176,69 +196,74 @@
     © 2026 Charoen Krung Condominium 3 | บริหารจัดการโดยนิติบุคคล
   </footer>
 
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-  
   <script>
-    /**
-     * URL ของ GAS Web App
-     */
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyzjNVlFuvBjr1-5FymPhV6FUiyX6c6hc9TlT3O6ms9LQBmLwfbnLTVav-Bl_by7uomRQ/exec";
+    // *** URL ของคุณ ***
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzWYO5hlWiyyNt1N7bPwkYkvckhuZ1Bwpq_-kfjSdE6H0Cf3AbMUYImcA6c5OV4pw27xg/exec";
 
-    let currentUser = null;
+    const loginForm = document.getElementById('loginForm');
+    const loader = document.getElementById('loader-overlay');
+    const welcomePopup = document.getElementById('welcome-popup');
+    const popupInner = document.getElementById('popup-inner');
+    const userDisplayName = document.getElementById('user-display-name');
+    const btnStart = document.getElementById('btn-start');
 
-    document.getElementById('loginForm').onsubmit = async function(e) {
+    loginForm.onsubmit = async (e) => {
       e.preventDefault();
-      toggleLoader(true);
-      
-      const payload = {
-        action: "checkLogin",
-        username: document.getElementById('userInput').value,
-        password: document.getElementById('passInput').value
-      };
+      loader.style.display = 'flex'; // แสดงหน้าจอจางลงพร้อมวงหมุน
 
       try {
-        // ส่งข้อมูล Login ไปเช็คที่ Code.gs
         const response = await fetch(WEB_APP_URL, {
           method: "POST",
-          mode: "no-cors", // สำคัญสำหรับการเชื่อมต่อจาก GitHub Pages
-          body: JSON.stringify(payload)
+          body: JSON.stringify({
+            action: "checkLogin",
+            username: document.getElementById('userInput').value,
+            password: document.getElementById('passInput').value
+          })
         });
-        
-        // สำหรับ mode "no-cors" เราไม่สามารถอ่านค่า response ตรงๆ ได้
-        // ในสถานการณ์จริง การแยกหน้า Gateway บน GitHub ควรใช้ SSO ของ Google เพื่อความปลอดภัยสูง
-        // แต่สำหรับ Logic นี้ หาก Deploy GAS เป็น Anyone, Me และใช้ modes: 'no-cors' จะทำการ "ส่ง" ได้สำเร็จ
-        
-        // เพื่อให้ Logic SPA ทำงานต่อได้โดยการเช็คกลับจากหลังบ้าน (ซึ่งเป็นวิธีที่ยุ่งยากใน mode no-cors)
-        // ฉันแนะนำให้ใช้ google.script.run จะดีที่สุดถ้าไฟล์อยู่บน Google เอง
-        
-        // แต่ถ้าอยู่บน GitHub ฉันปรับปรุง API (doPost) ให้ตอบกลับเป็น Text HTML ของหน้านั้นๆ เลย (Routing)
-        // เมื่อส่ง checkLogin สำเร็จ ก็ทำการ fetch Role Page ต่อ
-        
-        await loadPage("admin"); // สมมติว่าสำเร็จและเป็น admin (คุณต้องแก้ Logic ตรงนี้เพื่อแยกแยะ Role จริง)
 
+        const result = await response.json();
+
+        if (result.success) {
+          loader.style.display = 'none';
+          // แสดงป๊อปอัปต้อนรับสุดหรู
+          userDisplayName.innerText = result.full_name;
+          welcomePopup.style.display = 'flex';
+          setTimeout(() => popupInner.classList.add('show'), 10);
+
+          // เมื่อกดปุ่มในป๊อปอัป ค่อยโหลดหน้าถัดไป
+          btnStart.onclick = () => {
+            welcomePopup.style.display = 'none';
+            loadPage(result.role);
+          };
+        } else {
+          loader.style.display = 'none';
+          alert(result.message);
+        }
       } catch (err) {
-        toggleLoader(false);
-        alert("การเชื่อมต่อล้มเหลว: " + err);
+        loader.style.display = 'none';
+        alert("เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์");
       }
     };
 
     async function loadPage(role) {
+      loader.style.display = 'flex';
       try {
         const response = await fetch(WEB_APP_URL, {
           method: "POST",
           body: JSON.stringify({ action: "getRolePage", role: role })
         });
         const html = await response.text();
-        
+
         document.getElementById('login-page').remove();
         document.querySelector('.footer').style.display = 'none';
-        document.body.style.background = "#f8fafc"; 
-        
+        document.body.style.background = "#f4f7f6";
+        document.body.style.overflow = "auto";
+
         const container = document.getElementById('app-container');
         container.innerHTML = html;
         container.style.display = 'block';
-        
-        // Execute scripts in loaded HTML
+
+        // รันสคริปต์ที่ติดมากับหน้าใหม่
         const scripts = container.querySelectorAll("script");
         scripts.forEach(oldScript => {
           const newScript = document.createElement("script");
@@ -246,15 +271,13 @@
           newScript.appendChild(document.createTextNode(oldScript.innerHTML));
           oldScript.parentNode.replaceChild(newScript, oldScript);
         });
-        
-        toggleLoader(false);
+
+        loader.style.display = 'none';
       } catch (err) {
-        toggleLoader(false);
-        alert("โหลดหน้าจอผิดพลาด");
+        loader.style.display = 'none';
+        alert("ไม่สามารถโหลดหน้าจอหลักได้");
       }
     }
-
-    function toggleLoader(show) { document.getElementById('loader').style.display = show ? 'flex' : 'none'; }
   </script>
 </body>
 </html>
