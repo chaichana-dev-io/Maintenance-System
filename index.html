@@ -29,7 +29,6 @@
       overflow: hidden;
     }
 
-    /* --- Login Wrapper --- */
     .login-wrapper {
       width: 100%;
       max-width: 380px;
@@ -57,7 +56,6 @@
       letter-spacing: 1px;
     }
 
-    /* --- Form Styling (ปิดการจดจำ) --- */
     .form-control-lg {
       background: var(--glass-bg);
       border: 1px solid rgba(212, 175, 55, 0.5);
@@ -89,7 +87,6 @@
     }
     .btn-login:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(212, 175, 55, 0.4); color: var(--deep-blue); }
 
-    /* --- Loading Overlay --- */
     #loader-overlay {
       display: none;
       position: fixed;
@@ -99,8 +96,7 @@
       z-index: 9999;
       flex-direction: column;
       align-items: center;
-      justify-content: flex-start; 
-      padding-top: 15vh;
+      justify-content: center;
     }
     .spinner-gold {
       width: 60px; height: 60px;
@@ -111,7 +107,6 @@
     }
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
 
-    /* --- Welcome Popup --- */
     #welcome-popup {
       display: none;
       position: fixed;
@@ -148,7 +143,6 @@
     .btn-confirm:hover { background: var(--gold-light); transform: scale(1.05); }
 
     .footer { position: fixed; bottom: 20px; color: rgba(255,255,255,0.3); font-size: 0.75rem; }
-    #app-container { display: none; width: 100%; min-height: 100vh; background: #f4f7f6; }
   </style>
 </head>
 <body>
@@ -189,15 +183,13 @@
     </form>
   </div>
 
-  <div id="app-container"></div>
-
   <footer class="footer">
     © 2026 Charoen Krung Condominium 3 | บริหารจัดการโดยนิติบุคคล
   </footer>
 
   <script>
-    // *** ตรวจสอบ URL ของ Web App ให้ถูกต้องเสมอ ***
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwXCh1tc2T_Dd-UEpfCgzXJVISSnLzi6y9YUdOtgN2K1B7a9Zv8_gyB5uj32sIDTwOvLQ/exec";
+    // *** URL ของ Web App อัปเดตล่าสุด ***
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxx6z1Rfc6BS0jgM_AP3dWcquGSypxErEctyAsqMWyFotH36hU2G-JRzjAnr2c2pPDa1Q/exec";
 
     const loginForm = document.getElementById('loginForm');
     const loader = document.getElementById('loader-overlay');
@@ -224,13 +216,30 @@
 
         if (result.success) {
           loader.style.display = 'none';
+
+          // 1. บันทึกข้อมูลลง localStorage เพื่อให้หน้าอื่นดึงไปใช้ได้ (แก้ปัญหา Login ซ้อน)
+          localStorage.setItem('ck3_user', JSON.stringify({
+            full_name: result.full_name,
+            role: result.role,
+            user_id: result.user_id
+          }));
+
           userDisplayName.innerText = result.full_name;
           welcomePopup.style.display = 'flex';
           setTimeout(() => popupInner.classList.add('show'), 10);
 
+          // 2. เมื่อกดปุ่ม ให้ย้ายหน้าไปยังไฟล์ .html จริงบน GitHub
           btnStart.onclick = () => {
             welcomePopup.style.display = 'none';
-            loadPage(result.role);
+            const role = result.role.toLowerCase();
+            
+            if (role === 'admin' || role === 'super_admin') {
+              window.location.href = "admin.html";
+            } else if (role === 'technician') {
+              window.location.href = "tech.html";
+            } else {
+              window.location.href = "resident.html";
+            }
           };
         } else {
           loader.style.display = 'none';
@@ -241,44 +250,6 @@
         alert("เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์");
       }
     };
-
-    async function loadPage(role) {
-      loader.style.display = 'flex';
-      try {
-        const response = await fetch(WEB_APP_URL, {
-          method: "POST",
-          body: JSON.stringify({ 
-            action: "getRolePage", 
-            role: role,
-            callerRole: role 
-          })
-        });
-        const html = await response.text();
-
-        if(document.getElementById('login-page')) document.getElementById('login-page').remove();
-        if(document.querySelector('.footer')) document.querySelector('.footer').style.display = 'none';
-        
-        document.body.style.background = "#f4f7f6";
-        document.body.style.overflow = "auto";
-
-        const container = document.getElementById('app-container');
-        container.innerHTML = html;
-        container.style.display = 'block';
-
-        const scripts = container.querySelectorAll("script");
-        scripts.forEach(oldScript => {
-          const newScript = document.createElement("script");
-          Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
-          newScript.appendChild(document.createTextNode(oldScript.innerHTML));
-          oldScript.parentNode.replaceChild(newScript, oldScript);
-        });
-
-        loader.style.display = 'none';
-      } catch (err) {
-        loader.style.display = 'none';
-        alert("ไม่สามารถโหลดหน้าจอหลักได้");
-      }
-    }
   </script>
 </body>
 </html>
