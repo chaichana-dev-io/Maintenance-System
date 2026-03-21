@@ -9,201 +9,73 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
   
   <style>
-    :root {
-      --primary-blue: #1800ad;
-      --deep-blue: #0c005a;
-      --gold-primary: #d4af37;
-      --gold-light: #f1e3a0;
-      --glass-bg: rgba(255, 255, 255, 0.1);
-    }
+    :root { --primary-blue: #1800ad; --deep-blue: #0c005a; --gold-primary: #d4af37; --gold-light: #f1e3a0; --glass-bg: rgba(255, 255, 255, 0.1); }
+    body { font-family: 'Prompt', sans-serif; background: radial-gradient(circle at center, var(--primary-blue) 0%, var(--deep-blue) 100%); margin: 0; min-height: 100vh; display: flex; align-items: center; justify-content: center; overflow: hidden; }
+    .login-wrapper { width: 100%; max-width: 380px; text-align: center; z-index: 10; }
+    .logo-container img { max-width: 250px; filter: drop-shadow(0 0 15px rgba(212, 175, 55, 0.4)); margin-bottom: 20px; }
+    .system-title { font-size: 1.5rem; color: var(--gold-light); margin-bottom: 30px; letter-spacing: 1px; }
+    .form-control-lg { background: var(--glass-bg); border: 1px solid rgba(212, 175, 55, 0.3); color: white; border-radius: 12px; }
+    .form-control-lg:focus { background: rgba(255, 255, 255, 0.15); border-color: var(--gold-primary); color: white; box-shadow: none; }
+    .btn-login { background: linear-gradient(135deg, #d4af37 0%, #b8962c 100%); border: none; color: var(--deep-blue); padding: 14px; border-radius: 12px; font-weight: 600; width: 100%; margin-top: 10px; transition: 0.3s; }
+    .btn-login:disabled { opacity: 0.6; filter: grayscale(1); cursor: not-allowed; }
 
-    body {
-      font-family: 'Prompt', sans-serif;
-      background: radial-gradient(circle at center, var(--primary-blue) 0%, var(--deep-blue) 100%);
-      margin: 0;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      overflow: hidden;
-    }
+    /* 💎 Popup Style */
+    #welcome-popup { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(8px); z-index: 10000; align-items: center; justify-content: center; opacity: 0; transition: 0.3s; }
+    .popup-content { background: linear-gradient(145deg, var(--deep-blue), #1a004d); border: 2px solid var(--gold-primary); border-radius: 30px; padding: 40px; text-align: center; max-width: 350px; width: 90%; transform: scale(0.8); transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+    #welcome-popup.show { opacity: 1; }
+    #welcome-popup.show .popup-content { transform: scale(1); }
+    .btn-confirm { background: var(--gold-primary); color: var(--deep-blue); border: none; padding: 12px 40px; border-radius: 30px; font-weight: 600; transition: 0.3s; }
 
-    .login-wrapper {
-      width: 100%;
-      max-width: 380px;
-      text-align: center;
-      animation: fadeIn 1s ease-out;
-      z-index: 10;
-    }
-
-    @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(20px); }
-      to { opacity: 1; transform: translateY(0); }
-    }
-
-    .logo-container img {
-      max-width: 280px;
-      filter: drop-shadow(0 0 15px rgba(212, 175, 55, 0.4));
-      margin-bottom: 20px;
-    }
-
-    .system-title {
-      font-size: 1.6rem;
-      color: var(--gold-light);
-      margin-bottom: 30px;
-      text-shadow: 0 2px 4px rgba(0,0,0,0.5);
-      letter-spacing: 1px;
-    }
-
-    .form-control-lg {
-      background: var(--glass-bg);
-      border: 1px solid rgba(212, 175, 55, 0.5);
-      color: white;
-      border-radius: 12px;
-      padding: 12px 20px;
-      transition: 0.3s;
-    }
-    .form-control-lg:focus {
-      background: rgba(255, 255, 255, 0.15);
-      border-color: var(--gold-primary);
-      box-shadow: 0 0 15px rgba(212, 175, 55, 0.3);
-      color: white;
-    }
-    .form-label { color: var(--gold-primary); font-size: 0.85rem; margin-bottom: 8px; margin-left: 5px; text-align: left; display: block; }
-
-    .btn-login {
-      background: linear-gradient(135deg, #d4af37 0%, #b8962c 100%);
-      border: none;
-      color: var(--deep-blue);
-      padding: 14px;
-      border-radius: 12px;
-      font-weight: 600;
-      width: 100%;
-      margin-top: 10px;
-      letter-spacing: 2px;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-      transition: 0.3s;
-    }
-    .btn-login:hover { transform: translateY(-2px); box-shadow: 0 8px 20px rgba(212, 175, 55, 0.4); color: var(--deep-blue); }
-
-    #loader-overlay {
-      display: none;
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(12, 0, 90, 0.85);
-      backdrop-filter: blur(5px);
-      z-index: 9999;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-    }
-    .spinner-gold {
-      width: 60px; height: 60px;
-      border: 5px solid rgba(212, 175, 55, 0.2);
-      border-top: 5px solid var(--gold-primary);
-      border-radius: 50%;
-      animation: spin 1s linear infinite;
-    }
-    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-
-    #welcome-popup {
-      display: none;
-      position: fixed;
-      top: 0; left: 0; width: 100%; height: 100%;
-      background: rgba(0, 0, 0, 0.7);
-      z-index: 10000;
-      align-items: center; justify-content: center;
-    }
-    .popup-content {
-      background: linear-gradient(145deg, var(--deep-blue), #1a004d);
-      border: 2px solid var(--gold-primary);
-      border-radius: 25px;
-      padding: 40px;
-      text-align: center;
-      max-width: 340px;
-      width: 90%;
-      transform: scale(0.8);
-      opacity: 0;
-      transition: 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-      box-shadow: 0 20px 50px rgba(0,0,0,0.5);
-    }
-    .popup-content.show { transform: scale(1); opacity: 1; }
-    .popup-title { color: var(--gold-light); font-size: 1.8rem; margin-bottom: 10px; }
-    .popup-name { color: white; font-size: 1.2rem; margin-bottom: 25px; font-weight: 300; }
-    .btn-confirm {
-      background: var(--gold-primary);
-      color: var(--deep-blue);
-      border: none;
-      padding: 10px 40px;
-      border-radius: 30px;
-      font-weight: 600;
-      transition: 0.3s;
-    }
-    .btn-confirm:hover { background: var(--gold-light); transform: scale(1.05); }
-
-    .footer { position: fixed; bottom: 20px; color: rgba(255,255,255,0.3); font-size: 0.75rem; }
+    #loader-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(12, 0, 90, 0.9); z-index: 9999; flex-direction: column; align-items: center; justify-content: center; }
+    .spinner-gold { width: 50px; height: 50px; border: 4px solid rgba(212, 175, 55, 0.2); border-top-color: var(--gold-primary); border-radius: 50%; animation: spin 1s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
   </style>
 </head>
 <body>
 
-  <div id="loader-overlay">
-    <div class="spinner-gold mb-3"></div>
-    <div style="color: var(--gold-light); letter-spacing: 2px;">กำลังประมวลผล...</div>
-  </div>
+  <div id="loader-overlay"><div class="spinner-gold mb-3"></div><div style="color: var(--gold-light);">กำลังตรวจสอบสิทธิ์...</div></div>
 
   <div id="welcome-popup">
-    <div class="popup-content" id="popup-inner">
-      <div class="mb-3">
-        <img src="https://img1.pic.in.th/images/logo310c09ae65f63ac1d.png" width="120" alt="Logo">
-      </div>
-      <div class="popup-title">ยินดีต้อนรับ</div>
-      <div class="popup-name">คุณ <span id="user-display-name"></span></div>
-      <div class="text-white-50 mb-4" style="font-weight: 300;">เข้าสู่ระบบแจ้งซ่อมสำเร็จ</div>
-      <button class="btn-confirm" id="btn-start">เริ่มต้นใช้งาน</button>
+    <div class="popup-content">
+      <img src="https://img1.pic.in.th/images/logo310c09ae65f63ac1d.png" width="100" class="mb-3">
+      <h3 style="color: var(--gold-light);">ยินดีต้อนรับ</h3>
+      <p style="color: white; font-size: 1.2rem;">คุณ <span id="user-display-name"></span></p>
+      <p class="text-white-50 mb-4">เข้าสู่ระบบสำเร็จ</p>
+      <button class="btn-confirm" id="btn-start" onclick="redirectToApp()">เริ่มต้นใช้งาน</button>
     </div>
   </div>
 
-  <div id="login-page" class="login-wrapper">
-    <div class="logo-container">
-      <img src="https://img1.pic.in.th/images/logo310c09ae65f63ac1d.png" alt="Logo">
-    </div>
-    <div class="system-title">ระบบจัดการงานซ่อม</div>
+  <div class="login-wrapper">
+    <div class="logo-container"><img src="https://img1.pic.in.th/images/logo310c09ae65f63ac1d.png" alt="Logo"></div>
+    <div class="system-title">เจริญกรุงคอนโดมิเนียม 3</div>
     
     <form id="loginForm" autocomplete="off">
       <div class="mb-3 text-start">
-        <label class="form-label">USERNAME</label>
-        <input type="text" id="userInput" class="form-control form-control-lg" placeholder="ระบุชื่อผู้ใช้งาน" required autocomplete="one-time-code" spellcheck="false">
+        <label style="color:var(--gold-primary); font-size:0.8rem; margin-left:5px;">USERNAME</label>
+        <input type="text" id="userInput" class="form-control form-control-lg" required autocomplete="off" spellcheck="false">
       </div>
       <div class="mb-4 text-start">
-        <label class="form-label">PASSWORD</label>
-        <input type="password" id="passInput" class="form-control form-control-lg" placeholder="ระบุรหัสผ่าน" required autocomplete="new-password">
+        <label style="color:var(--gold-primary); font-size:0.8rem; margin-left:5px;">PASSWORD</label>
+        <input type="password" id="passInput" class="form-control form-control-lg" required autocomplete="new-password">
       </div>
-      <button type="submit" class="btn-login">เข้าสู่ระบบ</button>
+      <button type="submit" id="btn-login" class="btn-login">เข้าสู่ระบบ</button>
     </form>
   </div>
 
-  <footer class="footer">
-    © 2026 Charoen Krung Condominium 3 | บริหารจัดการโดยนิติบุคคล
-  </footer>
-
   <script>
-    // *** URL ของ Web App อัปเดตล่าสุด ***
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxz62x5nRBboqcC2u1v0BS7uXDbsvFw5XQO0rv1Y4VdqQzvp4M4z7xGJ9xg8yxr6tqLBQ/exec";
-
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwVbTUxPwRQ3aGKlCAsGUfiSE2KAW7ipSei0U9f3GvjEDPw10FmlMUdHHmyyQNhrRprEQ/exec";
     const loginForm = document.getElementById('loginForm');
-    const loader = document.getElementById('loader-overlay');
-    const welcomePopup = document.getElementById('welcome-popup');
-    const popupInner = document.getElementById('popup-inner');
-    const userDisplayName = document.getElementById('user-display-name');
-    const btnStart = document.getElementById('btn-start');
+    const btnLogin = document.getElementById('btn-login');
+    let currentUser = null;
 
     loginForm.onsubmit = async (e) => {
       e.preventDefault();
-      loader.style.display = 'flex'; 
+      btnLogin.disabled = true; // 🚫 ป้องกันกดซ้ำ
+      btnLogin.innerText = "กำลังตรวจสอบ...";
+      document.getElementById('loader-overlay').style.display = 'flex';
 
       try {
-        const response = await fetch(WEB_APP_URL, {
+        const res = await fetch(WEB_APP_URL, {
           method: "POST",
           body: JSON.stringify({
             action: "checkLogin",
@@ -211,45 +83,52 @@
             password: document.getElementById('passInput').value
           })
         });
-
-        const result = await response.json();
+        const result = await res.json();
 
         if (result.success) {
-          loader.style.display = 'none';
-
-          // 1. บันทึกข้อมูลลง localStorage เพื่อให้หน้าอื่นดึงไปใช้ได้ (แก้ปัญหา Login ซ้อน)
-          localStorage.setItem('ck3_user', JSON.stringify({
-            full_name: result.full_name,
-            role: result.role,
-            user_id: result.user_id
-          }));
-
-          userDisplayName.innerText = result.full_name;
-          welcomePopup.style.display = 'flex';
-          setTimeout(() => popupInner.classList.add('show'), 10);
-
-          // 2. เมื่อกดปุ่ม ให้ย้ายหน้าไปยังไฟล์ .html จริงบน GitHub
-          btnStart.onclick = () => {
-            welcomePopup.style.display = 'none';
-            const role = result.role.toLowerCase();
-            
-            if (role === 'admin' || role === 'super_admin') {
-              window.location.href = "admin.html";
-            } else if (role === 'technician') {
-              window.location.href = "tech.html";
-            } else {
-              window.location.href = "resident.html";
-            }
-          };
+          currentUser = result;
+          localStorage.setItem('ck3_user', JSON.stringify(result));
+          document.getElementById('user-display-name').innerText = result.full_name;
+          document.getElementById('loader-overlay').style.display = 'none';
+          
+          const popup = document.getElementById('welcome-popup');
+          popup.style.display = 'flex';
+          setTimeout(() => popup.classList.add('show'), 10);
         } else {
-          loader.style.display = 'none';
           alert(result.message);
+          resetUI();
         }
       } catch (err) {
-        loader.style.display = 'none';
-        alert("เกิดข้อผิดพลาดในการเชื่อมต่อเซิร์ฟเวอร์");
+        alert("การเชื่อมต่อขัดข้อง");
+        resetUI();
       }
     };
+
+    function resetUI() {
+      document.getElementById('loader-overlay').style.display = 'none';
+      btnLogin.disabled = false;
+      btnLogin.innerText = "เข้าสู่ระบบ";
+    }
+
+    function redirectToApp() {
+      const role = currentUser.role.toLowerCase();
+      if (role === 'admin' || role === 'super_admin') window.location.href = "admin.html";
+      else if (role === 'technician') window.location.href = "tech.html";
+      else window.location.href = "resident.html";
+    }
+
+    // ⌨️ Keyboard Control (Enter / Esc)
+    window.addEventListener('keydown', (e) => {
+      const popup = document.getElementById('welcome-popup');
+      if (popup.classList.contains('show')) {
+        if (e.key === 'Enter') redirectToApp();
+        if (e.key === 'Escape') {
+          popup.classList.remove('show');
+          setTimeout(() => popup.style.display = 'none', 300);
+          resetUI();
+        }
+      }
+    });
   </script>
 </body>
 </html>
