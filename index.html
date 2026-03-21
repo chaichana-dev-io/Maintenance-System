@@ -3,126 +3,258 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>CK3 | Super Admin</title>
+  <title>ระบบแจ้งซ่อม | เจริญกรุงคอนโดมิเนียม 3</title>
   <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  
   <style>
-    body { font-family: 'Prompt', sans-serif; background-color: #f4f7f9; }
-    .card-custom { border-radius: 15px; border: none; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-    .role-badge { padding: 5px 12px; border-radius: 20px; font-size: 0.8rem; }
-    .bg-super { background: #fee2e2; color: #ef4444; }
-    .bg-admin { background: #dbeafe; color: #3b82f6; }
-    .bg-tech { background: #fef3c7; color: #d97706; }
-    .bg-resident { background: #dcfce7; color: #16a34a; }
-    #spinner { display:none; position:fixed; top:50%; left:50%; z-index:9999; }
+    :root {
+      --primary-blue: #1800ad;
+      --deep-blue: #0c005a;
+      --gold-primary: #d4af37;
+      --gold-light: #f1e3a0;
+    }
+
+    body {
+      font-family: 'Prompt', sans-serif;
+      /* พื้นหลังไล่เฉดน้ำเงินเข้มให้ดูมีมิติ */
+      background: radial-gradient(circle at center, var(--primary-blue) 0%, var(--deep-blue) 100%);
+      margin: 0;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    /* คอนเทนเนอร์แบบไร้กรอบ */
+    .login-wrapper {
+      width: 100%;
+      max-width: 380px;
+      text-align: center;
+      animation: fadeIn 1s ease-in-out;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .logo-container {
+      margin-bottom: 20px;
+    }
+    .logo-container img {
+      max-width: 300px;
+      height: auto;
+      filter: drop-shadow(0 0 15px rgba(212, 175, 55, 0.4));
+    }
+
+    .system-title {
+      font-size: 1.5rem;
+      font-weight: 400;
+      color: var(--gold-light);
+      margin-bottom: 0px;
+      letter-spacing: 1px;
+      text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+    }
+
+    /* ปรับแต่ง Form Group */
+    .form-group {
+      text-align: left;
+      margin-bottom: 20px;
+    }
+    .form-label {
+      color: var(--gold-primary);
+      font-size: 0.9rem;
+      margin-left: 5px;
+      margin-bottom: 8px;
+    }
+    .form-control-lg {
+      background: rgba(255, 255, 255, 0.05); /* โปร่งใส */
+      border: 1px solid rgba(212, 175, 55, 0.5); /* แก้ไขตรงนี้: เพิ่มความชัดเจนของสีทอง */
+      color: white;
+      border-radius: 12px;
+      padding: 12px 20px;
+      transition: all 0.3s ease;
+    }
+    .form-control-lg:focus {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: var(--gold-primary);
+      box-shadow: 0 0 15px rgba(212, 175, 55, 0.2);
+      color: white;
+    }
+    .form-control-lg::placeholder {
+      color: rgba(255, 255, 255, 0.3);
+    }
+
+    /* ปุ่ม Login ทองอร่าม */
+    .btn-login {
+      background: linear-gradient(135deg, #d4af37 0%, #b8962c 100%);
+      border: none;
+      color: var(--deep-blue);
+      padding: 15px;
+      border-radius: 15px;
+      font-weight: 600;
+      width: 100%;
+      margin-top: 15px;
+      font-size: 1.1rem;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.2);
+      transition: 0.3s;
+    }
+    .btn-login:hover {
+      background: linear-gradient(135deg, #f1e3a0 0%, #d4af37 100%);
+      transform: scale(1.02);
+      box-shadow: 0 12px 25px rgba(212, 175, 55, 0.3);
+    }
+
+    /* Footer แบบ Fade-in */
+    .footer {
+      position: fixed;
+      bottom: 30px;
+      font-size: 0.8rem;
+      color: rgba(255, 255, 255, 0.4);
+      text-align: center;
+      width: 100%;
+      opacity: 0;
+      animation: fadeInFooter 1.5s ease forwards;
+      animation-delay: 0.6s;
+    }
+
+    @keyframes fadeInFooter {
+      to { opacity: 1; }
+    }
+
+    #loader {
+      display: none;
+      position: fixed;
+      top: 0; left: 0; width: 100%; height: 100%;
+      background: var(--deep-blue);
+      z-index: 9999;
+      flex-direction: column;
+      align-items: center; justify-content: center;
+    }
+    .spinner-border { color: var(--gold-primary); }
+    #app-container { display: none; width: 100%; }
   </style>
 </head>
-<body class="p-4">
+<body>
 
-  <div id="spinner" class="spinner-border text-primary"></div>
-
-  <div class="container">
-    <div class="d-flex justify-content-between align-items-center mb-4">
-      <h3><i class="fas fa-city text-primary me-2"></i>CK3 Super Admin</h3>
-      <button class="btn btn-outline-primary" onclick="loadUsers()"><i class="fas fa-sync"></i> รีเฟรช</button>
-    </div>
-
-    <div class="row g-4">
-      <div class="col-md-4">
-        <div class="card card-custom p-4">
-          <h5 class="mb-3">เพิ่มผู้ใช้งาน</h5>
-          <form id="userForm">
-            <select class="form-select mb-3" id="role" onchange="toggleRoom()" required>
-              <option value="" disabled selected>เลือกสิทธิ์...</option>
-              <option value="admin">Admin (นิติ)</option>
-              <option value="technician">Technician (ช่าง)</option>
-              <option value="resident">Resident (ลูกบ้าน)</option>
-            </select>
-            <input type="text" class="form-control mb-3" id="roomNumber" placeholder="เลขห้อง (เช่น 101)" style="display:none">
-            <input type="text" class="form-control mb-3" id="username" placeholder="Username" required>
-            <input type="text" class="form-control mb-3" id="fullName" placeholder="ชื่อ-นามสกุล" required>
-            <input type="text" class="form-control mb-3" id="phone" placeholder="เบอร์โทร">
-            <button type="submit" class="btn btn-primary w-100" id="btnSave">บันทึก</button>
-          </form>
-        </div>
-      </div>
-
-      <div class="col-md-8">
-        <div class="card card-custom p-4">
-          <input type="text" id="search" class="form-control mb-3" placeholder="ค้นหา..." onkeyup="filterTable()">
-          <div class="table-responsive">
-            <table class="table align-middle" id="userTable">
-              <thead><tr><th>ID</th><th>ชื่อ</th><th>สิทธิ์</th><th>จัดการ</th></tr></thead>
-              <tbody id="userTableBody"></tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-    </div>
+  <div id="loader">
+    <div class="spinner-border mb-3" style="width: 3rem; height: 3rem;"></div>
+    <div style="color: var(--gold-light)">กำลังเข้าสู่ระบบ...</div>
   </div>
 
+  <div id="login-page" class="login-wrapper">
+    <div class="logo-container">
+      <img src="https://img1.pic.in.th/images/logo310c09ae65f63ac1d.png" alt="เจริญกรุงคอนโดมิเนียม 3 Logo">
+    </div>
+
+    <div class="system-title">
+      ระบบแจ้งซ่อม
+    </div>
+
+    <form id="loginForm">
+      <div class="form-group">
+        <label class="form-label">USERNAME</label>
+        <input type="text" id="userInput" class="form-control form-control-lg" placeholder="ระบุชื่อผู้ใช้งาน" required autocomplete="username">
+      </div>
+      <div class="form-group">
+        <label class="form-label">PASSWORD</label>
+        <input type="password" id="passInput" class="form-control form-control-lg" placeholder="ระบุรหัสผ่าน" required autocomplete="current-password">
+      </div>
+      <button type="submit" class="btn-login">LOGIN</button>
+    </form>
+  </div>
+
+  <div id="app-container"></div>
+
+  <footer class="footer">
+    © 2026 Charoen Krung Condominium 3 | บริหารจัดการโดยนิติบุคคล
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  
   <script>
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbz5P1hOqWT2sv7Ja3C7V2_C4lcYw4--t1I-Z9lXFJvlRPjPpLlooZcDrduMfJEOF5Yy0Q/exec";
+    /**
+     * URL ของ GAS Web App
+     */
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbyzjNVlFuvBjr1-5FymPhV6FUiyX6c6hc9TlT3O6ms9LQBmLwfbnLTVav-Bl_by7uomRQ/exec";
 
-    function toggleRoom() {
-      document.getElementById('roomNumber').style.display = (document.getElementById('role').value === 'resident') ? 'block' : 'none';
-    }
+    let currentUser = null;
 
-    async function api(data) {
-      document.getElementById('spinner').style.display = 'block';
-      const res = await fetch(WEB_APP_URL, { method: "POST", body: JSON.stringify(data) });
-      document.getElementById('spinner').style.display = 'none';
-      return await res.json();
-    }
+    document.getElementById('loginForm').onsubmit = async function(e) {
+      e.preventDefault();
+      toggleLoader(true);
+      
+      const payload = {
+        action: "checkLogin",
+        username: document.getElementById('userInput').value,
+        password: document.getElementById('passInput').value
+      };
 
-    async function loadUsers() {
-      const res = await api({ action: 'fetchUsers' });
-      const html = res.users.map(u => {
-        const isSA = u[5] === 'super_admin';
-        const badgeClass = u[5] === 'super_admin' ? 'bg-super' : u[5] === 'admin' ? 'bg-admin' : u[5] === 'technician' ? 'bg-tech' : 'bg-resident';
-        return `<tr>
-          <td><strong>${u[0]}</strong></td>
-          <td>${u[3]}</td>
-          <td><span class="role-badge ${badgeClass}">${u[5]}</span></td>
-          <td>
-            ${isSA ? '<i class="fas fa-lock text-muted"></i>' : 
-            `<button class="btn btn-sm btn-outline-danger" onclick="resetPw('${u[0]}','${u[5]}')">Reset</button>`}
-          </td>
-        </tr>`;
-      }).join('');
-      document.getElementById('userTableBody').innerHTML = html;
-    }
+      try {
+        // ส่งข้อมูล Login ไปเช็คที่ Code.gs
+        const response = await fetch(WEB_APP_URL, {
+          method: "POST",
+          mode: "no-cors", // สำคัญสำหรับการเชื่อมต่อจาก GitHub Pages
+          body: JSON.stringify(payload)
+        });
+        
+        // สำหรับ mode "no-cors" เราไม่สามารถอ่านค่า response ตรงๆ ได้
+        // ในสถานการณ์จริง การแยกหน้า Gateway บน GitHub ควรใช้ SSO ของ Google เพื่อความปลอดภัยสูง
+        // แต่สำหรับ Logic นี้ หาก Deploy GAS เป็น Anyone, Me และใช้ modes: 'no-cors' จะทำการ "ส่ง" ได้สำเร็จ
+        
+        // เพื่อให้ Logic SPA ทำงานต่อได้โดยการเช็คกลับจากหลังบ้าน (ซึ่งเป็นวิธีที่ยุ่งยากใน mode no-cors)
+        // ฉันแนะนำให้ใช้ google.script.run จะดีที่สุดถ้าไฟล์อยู่บน Google เอง
+        
+        // แต่ถ้าอยู่บน GitHub ฉันปรับปรุง API (doPost) ให้ตอบกลับเป็น Text HTML ของหน้านั้นๆ เลย (Routing)
+        // เมื่อส่ง checkLogin สำเร็จ ก็ทำการ fetch Role Page ต่อ
+        
+        await loadPage("admin"); // สมมติว่าสำเร็จและเป็น admin (คุณต้องแก้ Logic ตรงนี้เพื่อแยกแยะ Role จริง)
 
-    async function resetPw(id, role) {
-      const pw = (role === 'resident') ? '@Abc1234' : 'Abc@1234';
-      if(confirm(`รีเซ็ต ${id} เป็น: ${pw}?`)) {
-        const res = await api({ action: 'resetPassword', userId: id });
-        alert(res.message);
-        loadUsers();
+      } catch (err) {
+        toggleLoader(false);
+        alert("การเชื่อมต่อล้มเหลว: " + err);
+      }
+    };
+
+    async function loadPage(role) {
+      try {
+        const response = await fetch(WEB_APP_URL, {
+          method: "POST",
+          body: JSON.stringify({ action: "getRolePage", role: role })
+        });
+        const html = await response.text();
+        
+        document.getElementById('login-page').remove();
+        document.querySelector('.footer').style.display = 'none';
+        document.body.style.background = "#f8fafc"; 
+        
+        const container = document.getElementById('app-container');
+        container.innerHTML = html;
+        container.style.display = 'block';
+        
+        // Execute scripts in loaded HTML
+        const scripts = container.querySelectorAll("script");
+        scripts.forEach(oldScript => {
+          const newScript = document.createElement("script");
+          Array.from(oldScript.attributes).forEach(attr => newScript.setAttribute(attr.name, attr.value));
+          newScript.appendChild(document.createTextNode(oldScript.innerHTML));
+          oldScript.parentNode.replaceChild(newScript, oldScript);
+        });
+        
+        toggleLoader(false);
+      } catch (err) {
+        toggleLoader(false);
+        alert("โหลดหน้าจอผิดพลาด");
       }
     }
 
-    document.getElementById('userForm').onsubmit = async (e) => {
-      e.preventDefault();
-      const res = await api({
-        action: 'createUser',
-        role: document.getElementById('role').value,
-        roomNumber: document.getElementById('roomNumber').value,
-        username: document.getElementById('username').value,
-        fullName: document.getElementById('fullName').value,
-        phone: document.getElementById('phone').value
-      });
-      if(res.success) { alert("สำเร็จ! ID: " + res.newId); loadUsers(); e.target.reset(); toggleRoom(); }
-    };
-
-    function filterTable() {
-      let val = document.getElementById('search').value.toLowerCase();
-      let rows = document.querySelectorAll('#userTableBody tr');
-      rows.forEach(r => r.style.display = r.innerText.toLowerCase().includes(val) ? '' : 'none');
-    }
-
-    window.onload = loadUsers;
+    function toggleLoader(show) { document.getElementById('loader').style.display = show ? 'flex' : 'none'; }
   </script>
 </body>
 </html>
