@@ -11,24 +11,23 @@
    
   <script>
     const userData = JSON.parse(localStorage.getItem('ck3_user'));
-    // 🛡️ ป้องกันสิทธิ: เฉพาะ Admin และ Super Admin เท่านั้นที่เข้าหน้านี้ได้
     if (!userData || (userData.role.toLowerCase() === 'resident' || userData.role.toLowerCase() === 'technician')) {
       window.location.href = "../index.html"; 
     }
     const ROLE = userData.role.toLowerCase();
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxz62x5nRBboqcC2u1v0BS7uXDbsvFw5XQO0rv1Y4VdqQzvp4M4z7xGJ9xg8yxr6tqLBQ/exec";
+    // ⚠️ มั่นใจว่า URL นี้คือตัวล่าสุดที่พี่ Deploy มานะครับ
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwVbTUxPwRQ3aGKlCAsGUfiSE2KAW7ipSei0U9f3GvjEDPw10FmlMUdHHmyyQNhrRprEQ/exec";
   </script>
 
   <style>
     :root { --primary-blue: #1800ad; --deep-blue: #0c005a; --gold-primary: #d4af37; --gold-light: #f1e3a0; --sidebar-width: 280px; }
     body { font-family: 'Prompt', sans-serif; background-color: #f4f7f6; margin: 0; overflow-x: hidden; }
 
-    /* Sidebar - Path ../ ออกไปหาไฟล์หลัก */
+    /* Sidebar */
     #sidebar { width: var(--sidebar-width); background: linear-gradient(180deg, var(--deep-blue) 0%, var(--primary-blue) 100%); color: white; position: fixed; height: 100vh; padding: 30px 15px; z-index: 1000; }
     .sidebar-brand { text-align: center; margin-bottom: 40px; }
     .sidebar-brand img { max-width: 140px; filter: drop-shadow(0 0 15px rgba(212,175,55,0.4)); }
     .logo-text { color: var(--gold-light); font-size: 1.1rem; font-weight: 500; margin-top: 10px; }
-
     .nav-item { padding: 14px 20px; color: rgba(255,255,255,0.7); text-decoration: none; display: flex; align-items: center; border-radius: 15px; margin-bottom: 8px; transition: 0.3s; cursor: pointer; }
     .nav-item:hover { background: rgba(255, 255, 255, 0.1); color: var(--gold-light); }
     .nav-item.active { background: var(--gold-primary); color: var(--deep-blue); font-weight: 600; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
@@ -36,27 +35,23 @@
 
     /* Main Content */
     #main-content { margin-left: var(--sidebar-width); padding: 40px; min-height: 100vh; display: flex; flex-direction: column; }
-    .content-wrapper { flex: 1; }
-    .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
-    .admin-profile { background: white; padding: 10px 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-
-    /* Table */
     .table-container { background: white; border-radius: 25px; padding: 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
-    .btn-action { width: 38px; height: 38px; border-radius: 12px; border: none; margin: 2px; transition: 0.2s; display: inline-flex; align-items: center; justify-content: center; }
+    .btn-action { width: 38px; height: 38px; border-radius: 12px; border: none; margin: 2px; transition: 0.2s; display: inline-flex; align-items: center; justify-content: center; cursor: pointer; }
     .btn-edit { background: #e3f2fd; color: #1976d2; }
     .btn-reset { background: #fff3e0; color: #f57c00; }
     .btn-delete { background: #ffebee; color: #d32f2f; }
     .btn-action:hover { transform: scale(1.1); }
 
-    /* Modal Overlay */
+    /* Modal */
     .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(12, 0, 90, 0.7); backdrop-filter: blur(8px); z-index: 10000; align-items: center; justify-content: center; opacity: 0; transition: 0.3s; }
     .modal-overlay.show { opacity: 1; display: flex; }
     .modal-card { background: white; width: 95%; max-width: 480px; padding: 35px; border-radius: 35px; box-shadow: 0 25px 50px rgba(0,0,0,0.4); transform: scale(0.8); transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
     .modal-overlay.show .modal-card { transform: scale(1); }
+    .form-control { border-radius: 12px; padding: 12px 15px; border: 1px solid #eee; background: #f9f9f9; width: 100%; margin-bottom: 15px; }
     
-    .form-label { font-size: 0.85rem; color: #666; margin-bottom: 5px; margin-left: 5px; }
-    .form-control { border-radius: 12px; padding: 12px 15px; border: 1px solid #eee; background: #f9f9f9; }
-    .form-control:focus { background: white; border-color: var(--gold-primary); box-shadow: none; outline: none; }
+    .modal-icon { width: 70px; height: 70px; margin: 0 auto 20px; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
+    .modal-icon.danger { background: #ff5252; }
+    .modal-icon.warning { background: #fbc02d; }
 
     .footer { text-align: center; padding: 25px 0 10px 0; color: rgba(0,0,0,0.4); font-size: 0.85rem; margin-top: auto; }
   </style>
@@ -69,7 +64,7 @@
       <div class="logo-text">ระบบแจ้งซ่อม</div>
     </div>
     <nav>
-      <a href="../admin.html" class="nav-item"><i class="fas fa-th-large"></i> แแดชบอร์ด</a>
+      <a href="../admin.html" class="nav-item"><i class="fas fa-th-large"></i> แดชบอร์ด</a>
       <a href="../repairs/" class="nav-item"><i class="fas fa-tools"></i> งานแจ้งซ่อม</a>
       <a href="./" class="nav-item active"><i class="fas fa-users-cog"></i> จัดการผู้ใช้</a>
       <a href="../profile.html" class="nav-item"><i class="fas fa-user-circle"></i> ข้อมูลส่วนตัว</a>
@@ -83,13 +78,13 @@
       <header class="header-top">
         <div>
           <h2 style="color: var(--deep-blue); font-weight: 600; margin: 0;">จัดการบัญชีผู้ใช้งาน</h2>
-          <p class="text-muted mb-0">ระบบบริหารจัดการสมาชิก เจริญกรุงคอนโด อาคาร 3</p>
+          <p class="text-muted mb-0">เจริญกรุงคอนโด อาคาร 3</p>
         </div>
         <div class="admin-profile"><i class="fas fa-user-shield me-2 text-primary"></i> <span id="admin-role-name"></span></div>
       </header>
 
       <div class="d-flex justify-content-end mb-4">
-        <button class="btn btn-primary px-4 py-2 shadow-sm border-0" style="border-radius:12px; background: var(--primary-blue);" onclick="openAddUserModal()">
+        <button class="btn btn-primary px-4 py-2 shadow-sm border-0" style="border-radius:12px; background: var(--primary-blue);" onclick="openModal('add-user-modal')">
           <i class="fas fa-plus me-2"></i> เพิ่มผู้ใช้ใหม่
         </button>
       </div>
@@ -98,11 +93,7 @@
         <table class="table align-middle">
           <thead>
             <tr class="text-muted">
-              <th>ID</th>
-              <th>Username</th>
-              <th>ชื่อ-นามสกุล</th>
-              <th>บทบาท</th>
-              <th class="text-center">จัดการ</th>
+              <th>ID</th><th>Username</th><th>ชื่อ-นามสกุล</th><th>บทบาท</th><th class="text-center">จัดการ</th>
             </tr>
           </thead>
           <tbody id="user-table-body">
@@ -111,50 +102,53 @@
         </table>
       </div>
     </div>
-
-    <footer class="footer">
-      © 2026 Charoen Krung Condominium 3 | บริหารจัดการโดยนิติบุคคล
-    </footer>
+    <footer class="footer">© 2026 Charoen Krung Condominium 3 | บริหารจัดการโดยนิติบุคคล</footer>
   </main>
 
   <div id="add-user-modal" class="modal-overlay">
     <div class="modal-card">
       <h3 class="fw-bold mb-4" style="color: var(--deep-blue);">+ สร้างบัญชีใหม่</h3>
-      <div class="row g-3 text-start">
-        <div class="col-12">
-          <label class="form-label">ระดับสิทธิ (Role)</label>
-          <select id="new-role" class="form-select form-control">
-            </select>
+      <div class="text-start">
+        <label class="small text-muted mb-1">สิทธิ (Role)</label>
+        <select id="new-role" class="form-control"></select>
+        <label class="small text-muted mb-1">เลขห้อง / Username</label>
+        <input type="text" id="new-username" class="form-control" placeholder="เช่น 301 หรือ admin01">
+        <label class="small text-muted mb-1">ชื่อ-นามสกุล</label>
+        <input type="text" id="new-fullname" class="form-control">
+        <label class="small text-muted mb-1">เบอร์โทรศัพท์</label>
+        <input type="text" id="new-phone" class="form-control">
+        <div class="d-flex gap-2 mt-3">
+          <button class="btn btn-light flex-grow-1 py-2" style="border-radius:12px" onclick="closeModal('add-user-modal')">ยกเลิก</button>
+          <button class="btn btn-primary flex-grow-1 py-2 border-0" style="border-radius:12px; background: var(--primary-blue);" onclick="submitNewUser()">บันทึก</button>
         </div>
-        <div class="col-md-6">
-          <label class="form-label">เลขห้อง / Username</label>
-          <input type="text" id="new-username" class="form-control" placeholder="เช่น 301 หรือ admin01">
-        </div>
-        <div class="col-md-6">
-          <label class="form-label">เบอร์โทรศัพท์</label>
-          <input type="text" id="new-phone" class="form-control" placeholder="08x-xxxxxxx">
-        </div>
-        <div class="col-12">
-          <label class="form-label">ชื่อ-นามสกุล</label>
-          <input type="text" id="new-fullname" class="form-control" placeholder="กรอกชื่อจริงและนามสกุล">
-        </div>
-        <div class="col-12 mt-4">
-          <div class="d-flex gap-2">
-            <button class="btn btn-light flex-grow-1 py-2" style="border-radius:12px" onclick="closeAddUserModal()">ยกเลิก (Esc)</button>
-            <button class="btn btn-primary flex-grow-1 py-2 border-0" style="border-radius:12px; background: var(--primary-blue);" onclick="submitNewUser()">บันทึกข้อมูล (Enter)</button>
-          </div>
-        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="edit-user-modal" class="modal-overlay">
+    <div class="modal-card text-start">
+      <h3 class="fw-bold mb-4" style="color: var(--deep-blue);">📝 แก้ไขข้อมูล</h3>
+      <input type="hidden" id="edit-id">
+      <label class="small text-muted mb-1">ID (ไม่สามารถเปลี่ยนได้)</label>
+      <input type="text" id="edit-id-display" class="form-control" disabled>
+      <label class="small text-muted mb-1">ชื่อ-นามสกุล</label>
+      <input type="text" id="edit-fullname" class="form-control">
+      <label class="small text-muted mb-1">เบอร์โทรศัพท์</label>
+      <input type="text" id="edit-phone" class="form-control">
+      <div class="d-flex gap-2 mt-3">
+        <button class="btn btn-light flex-grow-1 py-2" style="border-radius:12px" onclick="closeModal('edit-user-modal')">ยกเลิก</button>
+        <button class="btn btn-primary flex-grow-1 py-2 border-0" style="border-radius:12px; background: var(--primary-blue);" onclick="submitEditUser()">บันทึกการแก้ไข</button>
       </div>
     </div>
   </div>
 
   <div id="lux-modal" class="modal-overlay">
     <div class="modal-card" style="max-width: 400px; text-align: center;">
-      <div id="lux-icon-box" class="modal-icon" style="width: 70px; height: 70px; margin: 0 auto 20px;"><i id="lux-icon"></i></div>
+      <div id="lux-icon-box" class="modal-icon"><i id="lux-icon"></i></div>
       <h4 id="lux-title" class="fw-bold"></h4>
       <p id="lux-message" class="text-muted mb-4"></p>
       <div class="d-flex gap-2 justify-content-center">
-        <button id="lux-cancel" class="btn btn-light px-4" style="border-radius:12px">ยกเลิก</button>
+        <button id="lux-cancel" class="btn btn-light px-4" style="border-radius:12px" onclick="closeModal('lux-modal')">ยกเลิก</button>
         <button id="lux-confirm" class="btn btn-primary px-4 border-0" style="border-radius:12px; background: var(--primary-blue);">ตกลง</button>
       </div>
     </div>
@@ -165,31 +159,13 @@
 
     document.addEventListener('DOMContentLoaded', () => {
       document.getElementById('admin-role-name').innerText = ROLE.toUpperCase();
-      
-      // 🛡️ ตั้งค่า Dropdown ตามสิทธิ (ตามแผนผังลายมือ)
       const roleSelect = document.getElementById('new-role');
-      roleSelect.innerHTML = ''; 
-      
-      if (ROLE === 'super_admin') {
-        roleSelect.innerHTML += '<option value="super_admin">ผู้ดูแลระบบ (Super Admin)</option>';
-        roleSelect.innerHTML += '<option value="admin">ผู้จัดการ (Admin)</option>';
-      }
-      // ทั้ง Super Admin และ Admin เพิ่ม 2 ระดับนี้ได้เหมือนกัน
-      roleSelect.innerHTML += '<option value="technician">ช่างอาคาร (Technician)</option>';
-      roleSelect.innerHTML += '<option value="resident">ลูกบ้าน (Resident)</option>';
-
+      roleSelect.innerHTML = (ROLE === 'super_admin' ? '<option value="super_admin">Super Admin</option><option value="admin">Admin</option>' : '') + 
+                              '<option value="technician">Technician</option><option value="resident">Resident</option>';
       fetchUsers();
-
-      // Keyboard Listeners
-      window.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape') { closeAddUserModal(); closeLuxModal(); }
-        if (e.key === 'Enter') {
-          if (document.getElementById('add-user-modal').classList.contains('show')) submitNewUser();
-          else if (document.getElementById('lux-modal').classList.contains('show')) document.getElementById('lux-confirm').click();
-        }
-      });
     });
 
+    // --- ดึงข้อมูล ---
     async function fetchUsers() {
       const tbody = document.getElementById('user-table-body');
       try {
@@ -198,78 +174,101 @@
         if (r.success) {
           tbody.innerHTML = '';
           r.users.forEach(u => {
-            let btns = `<button class="btn-action btn-edit" title="แก้ไข"><i class="fas fa-pen"></i></button>`;
-            
-            // เฉพาะ Super Admin เท่านั้นที่มีปุ่ม Reset Password (กุญแจ)
-            if (ROLE === 'super_admin') {
-              btns += `<button class="btn-action btn-reset" title="รีเซ็ตพาสเวิร์ด" onclick="resetPw('${u[0]}','${u[1]}')"><i class="fas fa-key"></i></button>`;
-            }
-            
-            // Super Admin และ Admin มีปุ่มลบ (ถังขยะ)
-            btns += `<button class="btn-action btn-delete" title="ลบถาวร" onclick="deleteU('${u[0]}','${u[3]}')"><i class="fas fa-trash"></i></button>`;
+            let btns = `<button class="btn-action btn-edit" onclick="openEditModal('${u[0]}','${u[3]}','${u[4]}')" title="แก้ไข"><i class="fas fa-pen"></i></button>`;
+            if (ROLE === 'super_admin') btns += `<button class="btn-action btn-reset" onclick="resetPw('${u[0]}','${u[1]}')" title="Reset PW"><i class="fas fa-key"></i></button>`;
+            btns += `<button class="btn-action btn-delete" onclick="deleteU('${u[0]}','${u[3]}')" title="ลบ"><i class="fas fa-trash"></i></button>`;
             
             tbody.innerHTML += `<tr>
-              <td><small class="text-muted">${u[0]}</small></td>
-              <td><strong>${u[1]}</strong></td>
-              <td>${u[3]}</td>
-              <td><span class="badge ${u[5]==='resident'?'bg-info text-dark':'bg-dark'} px-3" style="border-radius:8px">${u[5]}</span></td>
+              <td><small class="text-muted">${u[0]}</small></td><td><strong>${u[1]}</strong></td><td>${u[3]}</td>
+              <td><span class="badge ${u[5]==='resident'?'bg-info text-dark':'bg-dark'} px-3">${u[5]}</span></td>
               <td class="text-center">${btns}</td>
             </tr>`;
           });
         }
-      } catch (e) { tbody.innerHTML = '<tr><td colspan="5" class="text-center text-danger">ไม่สามารถโหลดข้อมูลได้</td></tr>'; }
+      } catch (e) { tbody.innerHTML = '<tr><td colspan="5">เกิดข้อผิดพลาด</td></tr>'; }
     }
 
-    function openAddUserModal() {
-      document.getElementById('add-user-modal').style.display = 'flex';
-      setTimeout(() => document.getElementById('add-user-modal').classList.add('show'), 10);
-    }
-    function closeAddUserModal() {
-      document.getElementById('add-user-modal').classList.remove('show');
-      setTimeout(() => document.getElementById('add-user-modal').style.display = 'none', 300);
-    }
-
+    // --- สร้างผู้ใช้ ---
     async function submitNewUser() {
-      const role = document.getElementById('new-role').value;
-      const username = document.getElementById('new-username').value;
-      const fullname = document.getElementById('new-fullname').value;
-      const phone = document.getElementById('new-phone').value;
-
-      if (!username || !fullname) return alert("กรุณาระบุ Username และ ชื่อ-นามสกุล");
-
-      const data = { action: "createUser", callerRole: ROLE, role: role, username: username, fullName: fullname, phone: phone };
-      
+      const data = { 
+        action: "createUser", callerRole: ROLE, 
+        role: document.getElementById('new-role').value, 
+        username: document.getElementById('new-username').value, 
+        fullName: document.getElementById('new-fullname').value, 
+        phone: document.getElementById('new-phone').value 
+      };
+      if (!data.username || !data.fullName) return alert("กรุณากรอกข้อมูลหลักให้ครบ");
       const res = await fetch(WEB_APP_URL, { method: "POST", body: JSON.stringify(data) });
       const r = await res.json();
-      if (r.success) {
-        alert(r.message);
-        closeAddUserModal();
-        fetchUsers();
-      } else alert(r.message);
+      alert(r.message); if(r.success) { closeModal('add-user-modal'); fetchUsers(); }
     }
 
+    // --- แก้ไขผู้ใช้ ---
+    function openEditModal(id, name, phone) {
+      document.getElementById('edit-id').value = id;
+      document.getElementById('edit-id-display').value = id;
+      document.getElementById('edit-fullname').value = name;
+      document.getElementById('edit-phone').value = phone;
+      openModal('edit-user-modal');
+    }
+
+    async function submitEditUser() {
+      const data = {
+        action: "updateUser", callerRole: ROLE,
+        userId: document.getElementById('edit-id').value,
+        fullName: document.getElementById('edit-fullname').value,
+        phone: document.getElementById('edit-phone').value
+      };
+      const res = await fetch(WEB_APP_URL, { method: "POST", body: JSON.stringify(data) });
+      const r = await res.json();
+      alert(r.message); if(r.success) { closeModal('edit-user-modal'); fetchUsers(); }
+    }
+
+    // --- ลบผู้ใช้ ---
+    function deleteU(id, name) {
+      openLuxModal({
+        title: "ลบผู้ใช้ถาวร?", message: `ยืนยันการลบคุณ ${name} (${id})? ย้อนคืนไม่ได้นะ!`, type: "danger",
+        onConfirm: async () => {
+          const res = await fetch(WEB_APP_URL, { method: "POST", body: JSON.stringify({ action: "deleteUser", userId: id, callerRole: ROLE }) });
+          const r = await res.json();
+          alert(r.message); if(r.success) fetchUsers();
+        }
+      });
+    }
+
+    // --- รีเซ็ตรหัสผ่าน ---
+    function resetPw(id, name) {
+      openLuxModal({
+        title: "รีเซ็ตรหัสผ่าน?", message: `รีเซ็ตรหัสของ ${name} เป็นค่าเริ่มต้น?`, type: "warning",
+        onConfirm: async () => {
+          const res = await fetch(WEB_APP_URL, { method: "POST", body: JSON.stringify({ action: "resetPassword", userId: id, callerRole: ROLE }) });
+          const r = await res.json();
+          alert(r.message);
+        }
+      });
+    }
+
+    // --- ระบบ Modal ---
+    function openModal(id) {
+      document.getElementById(id).style.display = 'flex';
+      setTimeout(() => document.getElementById(id).classList.add('show'), 10);
+    }
+    function closeModal(id) {
+      document.getElementById(id).classList.remove('show');
+      setTimeout(() => document.getElementById(id).style.display = 'none', 300);
+    }
     function openLuxModal(opts) {
       document.getElementById('lux-title').innerText = opts.title;
       document.getElementById('lux-message').innerText = opts.message;
       const box = document.getElementById('lux-icon-box');
-      if (opts.type === 'danger') { box.classList.add('danger'); document.getElementById('lux-icon').className = 'fas fa-exclamation-triangle'; }
-      else { box.classList.remove('danger'); document.getElementById('lux-icon').className = 'fas fa-question'; }
-      document.getElementById('lux-modal').style.display = 'flex';
-      setTimeout(() => document.getElementById('lux-modal').classList.add('show'), 10);
+      box.className = 'modal-icon ' + (opts.type === 'danger' ? 'danger' : 'warning');
+      document.getElementById('lux-icon').className = 'fas ' + (opts.type === 'danger' ? 'fa-trash-alt' : 'fa-key');
+      openModal('lux-modal');
       modalAction = opts.onConfirm;
     }
-    function closeLuxModal() {
-      document.getElementById('lux-modal').classList.remove('show');
-      setTimeout(() => document.getElementById('lux-modal').style.display = 'none', 300);
-    }
-    document.getElementById('lux-confirm').onclick = () => { if(modalAction) modalAction(); closeLuxModal(); };
-    document.getElementById('lux-cancel').onclick = closeLuxModal;
+    document.getElementById('lux-confirm').onclick = () => { if(modalAction) modalAction(); closeModal('lux-modal'); };
 
-    function logout() {
-      openLuxModal({ title: 'ออกจากระบบ?', message: 'คุณต้องการสิ้นสุดการทำงานและออกจากระบบใช่หรือไม่?', onConfirm: () => { localStorage.removeItem('ck3_user'); window.location.href = "../index.html"; } });
-    }
-    function resetPw(id, name) { openLuxModal({ title: 'รีเซ็ตรหัสผ่าน?', message: `ระบบจะรีเซ็ตรหัสของ ${name} เป็นค่าเริ่มต้น ยืนยันหรือไม่?`, onConfirm: async () => { /* API Call */ } }); }
-    function deleteU(id, name) { openLuxModal({ title: 'ลบผู้ใช้ถาวร!', message: `ต้องการลบ ${name} ออกจากระบบถาวรหรือไม่?`, type: 'danger', onConfirm: async () => { /* API Call */ } }); }
+    function logout() { localStorage.removeItem('ck3_user'); window.location.href = "../index.html"; }
   </script>
 </body>
 </html>
