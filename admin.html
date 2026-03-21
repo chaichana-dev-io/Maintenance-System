@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Admin Dashboard | เจริญกรุงคอนโดมิเนียม 3</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  
+  <script>
+    /**
+     * 🛡️ ส่วนที่ 1: ระบบตรวจสอบสิทธิ (Session Check)
+     * โค้ดส่วนนี้จะทำงานทันทีที่เปิดหน้า เพื่อเช็คว่ามีการล็อกอินมาจาก index.html หรือยัง
+     */
+    const userData = JSON.parse(localStorage.getItem('ck3_user'));
+
+    // ถ้าไม่มีข้อมูลในเครื่อง หรือสิทธิไม่ใช่ Admin ให้เด้งกลับหน้า Login ทันที
+    if (!userData || (userData.role.toLowerCase() !== 'admin' && userData.role.toLowerCase() !== 'super_admin')) {
+      alert("สิทธิการเข้าถึงไม่ถูกต้อง หรือเซสชั่นหมดอายุ กรุณาล็อกอินใหม่");
+      window.location.href = "index.html"; 
+    }
+  </script>
+
+  <style>
+    :root {
+      --primary-blue: #1800ad;
+      --deep-blue: #0c005a;
+      --gold-primary: #d4af37;
+      --gold-light: #f1e3a0;
+      --sidebar-width: 280px;
+    }
+
+    body {
+      font-family: 'Prompt', sans-serif;
+      background-color: #f4f7f6;
+      margin: 0;
+    }
+
+    /* --- Sidebar --- */
+    #sidebar {
+      width: var(--sidebar-width);
+      background: linear-gradient(180deg, var(--deep-blue) 0%, var(--primary-blue) 100%);
+      color: white;
+      position: fixed;
+      height: 100vh;
+      padding: 30px 15px;
+      transition: 0.3s;
+      z-index: 1000;
+    }
+
+    .sidebar-brand {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+
+    .sidebar-brand img {
+      max-width: 140px;
+      filter: drop-shadow(0 0 10px rgba(212,175,55,0.3));
+    }
+
+    .nav-item {
+      padding: 14px 20px;
+      color: rgba(255,255,255,0.7);
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      border-radius: 12px;
+      margin-bottom: 8px;
+      transition: 0.3s;
+      cursor: pointer;
+    }
+
+    .nav-item:hover {
+      background: rgba(212, 175, 55, 0.1);
+      color: var(--gold-light);
+    }
+
+    .nav-item.active {
+      background: var(--gold-primary);
+      color: var(--deep-blue);
+      font-weight: 600;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    }
+
+    .nav-item i {
+      margin-right: 15px;
+      font-size: 1.1rem;
+      width: 20px;
+      text-align: center;
+    }
+
+    /* --- Main Content --- */
+    #main-content {
+      margin-left: var(--sidebar-width);
+      padding: 40px;
+      min-height: 120vh;
+    }
+
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+    }
+
+    .admin-profile {
+      background: white;
+      padding: 8px 18px;
+      border-radius: 15px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      border: 1px solid #eee;
+    }
+
+    /* Stats Cards */
+    .stat-card {
+      background: white;
+      border-radius: 20px;
+      padding: 25px;
+      border: none;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.03);
+      text-align: center;
+      transition: 0.3s;
+    }
+
+    .stat-card:hover { transform: translateY(-5px); }
+
+    .stat-icon {
+      width: 50px; height: 50px;
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 15px;
+      font-size: 1.4rem;
+    }
+
+    /* Welcome Banner */
+    .welcome-banner {
+      background: linear-gradient(90deg, var(--deep-blue), var(--primary-blue));
+      color: white;
+      padding: 40px;
+      border-radius: 25px;
+      position: relative;
+      overflow: hidden;
+      margin-top: 30px;
+      box-shadow: 0 10px 30px rgba(24,0,173,0.15);
+    }
+
+    .welcome-banner i.bg-icon {
+      position: absolute; right: -20px; bottom: -20px;
+      font-size: 10rem; opacity: 0.1; transform: rotate(-15deg);
+    }
+
+    .fade-in { animation: fadeIn 0.5s ease-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+    @media (max-width: 992px) {
+      #sidebar { transform: translateX(-80%); }
+      #main-content { margin-left: 0; }
+    }
+  </style>
+</head>
+<body>
+
+  <aside id="sidebar">
+    <div class="sidebar-brand">
+      <img src="https://img1.pic.in.th/images/logo310c09ae65f63ac1d.png" alt="Logo">
+      <div style="color: var(--gold-light); letter-spacing: 2px; font-size: 0.8rem; margin-top: 15px;">ADMIN PANEL</div>
+    </div>
+
+    <nav>
+      <div class="nav-item active" onclick="location.reload()">
+        <i class="fas fa-th-large"></i> แดชบอร์ดหลัก
+      </div>
+      <div class="nav-item">
+        <i class="fas fa-tools"></i> งานแจ้งซ่อม (Soon)
+      </div>
+      <div class="nav-item">
+        <i class="fas fa-users-cog"></i> จัดการผู้ใช้ (Soon)
+      </div>
+      <hr style="border-color: rgba(212,175,55,0.2); margin: 20px 0;">
+      <div class="nav-item text-warning" onclick="logout()">
+        <i class="fas fa-sign-out-alt"></i> ออกจากระบบ
+      </div>
+    </nav>
+  </aside>
+
+  <main id="main-content">
+    
+    <header class="header-top">
+      <div>
+        <h2 style="color: var(--deep-blue); font-weight: 600; margin: 0;">ภาพรวมระบบ</h2>
+        <p class="text-muted mb-0">เจริญกรุงคอนโดมิเนียม 3</p>
+      </div>
+      <div class="admin-profile">
+        <i class="fas fa-user-shield me-2 text-primary"></i>
+        <span id="admin-name-display" style="font-weight: 500;">Admin Name</span>
+      </div>
+    </header>
+
+    <div class="fade-in">
+      <div class="row g-4">
+        <div class="col-md-3">
+          <div class="stat-card">
+            <div class="stat-icon" style="background: #fff0f0; color: #ff5252;"><i class="fas fa-exclamation-circle"></i></div>
+            <h2 style="color: var(--deep-blue);">08</h2>
+            <div class="text-muted small">งานรอดำเนินการ</div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="stat-card">
+            <div class="stat-icon" style="background: #e3f2fd; color: #2196f3;"><i class="fas fa-sync"></i></div>
+            <h2 style="color: var(--deep-blue);">14</h2>
+            <div class="text-muted small">กำลังซ่อมแซม</div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="stat-card">
+            <div class="stat-icon" style="background: #e8f5e9; color: #4caf50;"><i class="fas fa-check-double"></i></div>
+            <h2 style="color: var(--deep-blue);">124</h2>
+            <div class="text-muted small">เสร็จสมบูรณ์</div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="stat-card">
+            <div class="stat-icon" style="background: #fff8e1; color: #ffc107;"><i class="fas fa-users"></i></div>
+            <h2 style="color: var(--deep-blue);">52</h2>
+            <div class="text-muted small">สมาชิกลูกบ้าน</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="welcome-banner">
+        <div style="position: relative; z-index: 2;">
+          <h3 style="font-weight: 500; margin-bottom: 10px;">สวัสดีครับ, คุณ <span id="welcome-name-tag">Admin</span></h3>
+          <p style="opacity: 0.8; font-weight: 300; margin-bottom: 0;">ระบบพร้อมสำหรับการจัดการงานวันนี้ มีรายการใหม่ที่ยังไม่ได้ตรวจสอบ 3 รายการ</p>
+        </div>
+        <i class="fas fa-hotel bg-icon"></i>
+      </div>
+    </div>
+  </main>
+
+  <script>
+    /**
+     * 🚀 ส่วนที่ 2: ดึงข้อมูลมาแสดงผล
+     */
+    document.addEventListener('DOMContentLoaded', () => {
+      // ดึงชื่อจาก localStorage ที่ index.html ฝากไว้
+      const name = userData.full_name;
+      document.getElementById('admin-name-display').innerText = name;
+      document.getElementById('welcome-name-tag').innerText = name;
+    });
+
+    /**
+     * 🚪 ฟังก์ชันออกจากระบบ
+     */
+    function logout() {
+      if (confirm("คุณต้องการออกจากระบบใช่หรือไม่?")) {
+        localStorage.removeItem('ck3_user'); // ล้างข้อมูลบัตรผ่านในเครื่อง
+        window.location.href = "index.html"; // กลับไปหน้าแรก
+      }
+    }
+  </script>
+</body>
+</html>
