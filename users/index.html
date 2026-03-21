@@ -15,7 +15,6 @@
       window.location.href = "../index.html"; 
     }
     const ROLE = userData.role.toLowerCase();
-    // ⚠️ มั่นใจว่า URL นี้คือตัวล่าสุดที่พี่ Deploy มานะครับ
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwVbTUxPwRQ3aGKlCAsGUfiSE2KAW7ipSei0U9f3GvjEDPw10FmlMUdHHmyyQNhrRprEQ/exec";
   </script>
 
@@ -110,13 +109,17 @@
       <h3 class="fw-bold mb-4" style="color: var(--deep-blue);">+ สร้างบัญชีใหม่</h3>
       <div class="text-start">
         <label class="small text-muted mb-1">สิทธิ (Role)</label>
-        <select id="new-role" class="form-control"></select>
+        <select id="new-role" class="form-control" autocomplete="off"></select>
+        
         <label class="small text-muted mb-1">เลขห้อง / Username</label>
-        <input type="text" id="new-username" class="form-control" placeholder="เช่น 301 หรือ admin01">
+        <input type="text" id="new-username" class="form-control" placeholder="เช่น 301 หรือ admin01" autocomplete="off">
+        
         <label class="small text-muted mb-1">ชื่อ-นามสกุล</label>
-        <input type="text" id="new-fullname" class="form-control">
+        <input type="text" id="new-fullname" class="form-control" autocomplete="off">
+        
         <label class="small text-muted mb-1">เบอร์โทรศัพท์</label>
-        <input type="text" id="new-phone" class="form-control">
+        <input type="text" id="new-phone" class="form-control" autocomplete="off">
+        
         <div class="d-flex gap-2 mt-3">
           <button class="btn btn-light flex-grow-1 py-2" style="border-radius:12px" onclick="closeModal('add-user-modal')">ยกเลิก</button>
           <button class="btn btn-primary flex-grow-1 py-2 border-0" style="border-radius:12px; background: var(--primary-blue);" onclick="submitNewUser()">บันทึก</button>
@@ -130,11 +133,14 @@
       <h3 class="fw-bold mb-4" style="color: var(--deep-blue);">📝 แก้ไขข้อมูล</h3>
       <input type="hidden" id="edit-id">
       <label class="small text-muted mb-1">ID (ไม่สามารถเปลี่ยนได้)</label>
-      <input type="text" id="edit-id-display" class="form-control" disabled>
+      <input type="text" id="edit-id-display" class="form-control" disabled autocomplete="off">
+      
       <label class="small text-muted mb-1">ชื่อ-นามสกุล</label>
-      <input type="text" id="edit-fullname" class="form-control">
+      <input type="text" id="edit-fullname" class="form-control" autocomplete="off">
+      
       <label class="small text-muted mb-1">เบอร์โทรศัพท์</label>
-      <input type="text" id="edit-phone" class="form-control">
+      <input type="text" id="edit-phone" class="form-control" autocomplete="off">
+      
       <div class="d-flex gap-2 mt-3">
         <button class="btn btn-light flex-grow-1 py-2" style="border-radius:12px" onclick="closeModal('edit-user-modal')">ยกเลิก</button>
         <button class="btn btn-primary flex-grow-1 py-2 border-0" style="border-radius:12px; background: var(--primary-blue);" onclick="submitEditUser()">บันทึกการแก้ไข</button>
@@ -165,7 +171,7 @@
       fetchUsers();
     });
 
-    // --- ดึงข้อมูล ---
+    // ฟังก์ชันอื่นๆ คงเดิม...
     async function fetchUsers() {
       const tbody = document.getElementById('user-table-body');
       try {
@@ -188,7 +194,6 @@
       } catch (e) { tbody.innerHTML = '<tr><td colspan="5">เกิดข้อผิดพลาด</td></tr>'; }
     }
 
-    // --- สร้างผู้ใช้ ---
     async function submitNewUser() {
       const data = { 
         action: "createUser", callerRole: ROLE, 
@@ -200,10 +205,16 @@
       if (!data.username || !data.fullName) return alert("กรุณากรอกข้อมูลหลักให้ครบ");
       const res = await fetch(WEB_APP_URL, { method: "POST", body: JSON.stringify(data) });
       const r = await res.json();
-      alert(r.message); if(r.success) { closeModal('add-user-modal'); fetchUsers(); }
+      alert(r.message); if(r.success) { 
+        // ล้างข้อมูลหลังบันทึกสำเร็จ (เพื่อความสะอาด)
+        document.getElementById('new-username').value = '';
+        document.getElementById('new-fullname').value = '';
+        document.getElementById('new-phone').value = '';
+        closeModal('add-user-modal'); 
+        fetchUsers(); 
+      }
     }
 
-    // --- แก้ไขผู้ใช้ ---
     function openEditModal(id, name, phone) {
       document.getElementById('edit-id').value = id;
       document.getElementById('edit-id-display').value = id;
@@ -224,7 +235,6 @@
       alert(r.message); if(r.success) { closeModal('edit-user-modal'); fetchUsers(); }
     }
 
-    // --- ลบผู้ใช้ ---
     function deleteU(id, name) {
       openLuxModal({
         title: "ลบผู้ใช้ถาวร?", message: `ยืนยันการลบคุณ ${name} (${id})? ย้อนคืนไม่ได้นะ!`, type: "danger",
@@ -236,7 +246,6 @@
       });
     }
 
-    // --- รีเซ็ตรหัสผ่าน ---
     function resetPw(id, name) {
       openLuxModal({
         title: "รีเซ็ตรหัสผ่าน?", message: `รีเซ็ตรหัสของ ${name} เป็นค่าเริ่มต้น?`, type: "warning",
@@ -248,7 +257,6 @@
       });
     }
 
-    // --- ระบบ Modal ---
     function openModal(id) {
       document.getElementById(id).style.display = 'flex';
       setTimeout(() => document.getElementById(id).classList.add('show'), 10);
