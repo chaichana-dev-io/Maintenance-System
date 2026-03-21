@@ -41,16 +41,19 @@
     .btn-delete { background: #ffebee; color: #d32f2f; }
     .btn-action:hover { transform: scale(1.1); }
 
-    /* Modal */
-    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(12, 0, 90, 0.7); backdrop-filter: blur(8px); z-index: 10000; align-items: center; justify-content: center; opacity: 0; transition: 0.3s; }
+    /* 💎 Luxury Modal Styling */
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(12, 0, 90, 0.7); backdrop-filter: blur(8px); z-index: 10000; align-items: center; justify-content: center; opacity: 0; transition: 0.3s ease; }
     .modal-overlay.show { opacity: 1; display: flex; }
     .modal-card { background: white; width: 95%; max-width: 480px; padding: 35px; border-radius: 35px; box-shadow: 0 25px 50px rgba(0,0,0,0.4); transform: scale(0.8); transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
     .modal-overlay.show .modal-card { transform: scale(1); }
-    .form-control { border-radius: 12px; padding: 12px 15px; border: 1px solid #eee; background: #f9f9f9; width: 100%; margin-bottom: 15px; }
+    
+    .form-control { border-radius: 12px; padding: 12px 15px; border: 1px solid #eee; background: #f9f9f9; width: 100%; margin-bottom: 15px; transition: 0.2s; }
+    .form-control:focus { border-color: var(--gold-primary); background: white; outline: none; box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1); }
     
     .modal-icon { width: 70px; height: 70px; margin: 0 auto 20px; color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; }
     .modal-icon.danger { background: #ff5252; }
     .modal-icon.warning { background: #fbc02d; }
+    .modal-icon.primary { background: var(--primary-blue); }
 
     .footer { text-align: center; padding: 25px 0 10px 0; color: rgba(0,0,0,0.4); font-size: 0.85rem; margin-top: auto; }
   </style>
@@ -106,23 +109,20 @@
 
   <div id="add-user-modal" class="modal-overlay">
     <div class="modal-card">
-      <h3 class="fw-bold mb-4" style="color: var(--deep-blue);">+ สร้างบัญชีใหม่</h3>
+      <div class="modal-icon primary"><i class="fas fa-user-plus"></i></div>
+      <h3 class="fw-bold mb-4" style="color: var(--deep-blue);">สร้างบัญชีใหม่</h3>
       <div class="text-start">
         <label class="small text-muted mb-1">สิทธิ (Role)</label>
         <select id="new-role" class="form-control" autocomplete="off"></select>
-        
         <label class="small text-muted mb-1">เลขห้อง / Username</label>
         <input type="text" id="new-username" class="form-control" placeholder="เช่น 301 หรือ admin01" autocomplete="off">
-        
         <label class="small text-muted mb-1">ชื่อ-นามสกุล</label>
         <input type="text" id="new-fullname" class="form-control" autocomplete="off">
-        
         <label class="small text-muted mb-1">เบอร์โทรศัพท์</label>
         <input type="text" id="new-phone" class="form-control" autocomplete="off">
-        
         <div class="d-flex gap-2 mt-3">
-          <button class="btn btn-light flex-grow-1 py-2" style="border-radius:12px" onclick="closeModal('add-user-modal')">ยกเลิก</button>
-          <button class="btn btn-primary flex-grow-1 py-2 border-0" style="border-radius:12px; background: var(--primary-blue);" onclick="submitNewUser()">บันทึก</button>
+          <button class="btn btn-light flex-grow-1 py-2" style="border-radius:12px" onclick="closeModal('add-user-modal')">ยกเลิก (Esc)</button>
+          <button class="btn btn-primary flex-grow-1 py-2 border-0" style="border-radius:12px; background: var(--primary-blue);" onclick="submitNewUser()">บันทึก (Enter)</button>
         </div>
       </div>
     </div>
@@ -130,20 +130,18 @@
 
   <div id="edit-user-modal" class="modal-overlay">
     <div class="modal-card text-start">
-      <h3 class="fw-bold mb-4" style="color: var(--deep-blue);">📝 แก้ไขข้อมูล</h3>
+      <div class="modal-icon warning"><i class="fas fa-user-edit"></i></div>
+      <h3 class="fw-bold mb-4 text-center" style="color: var(--deep-blue);">แก้ไขข้อมูล</h3>
       <input type="hidden" id="edit-id">
       <label class="small text-muted mb-1">ID (ไม่สามารถเปลี่ยนได้)</label>
       <input type="text" id="edit-id-display" class="form-control" disabled autocomplete="off">
-      
       <label class="small text-muted mb-1">ชื่อ-นามสกุล</label>
       <input type="text" id="edit-fullname" class="form-control" autocomplete="off">
-      
       <label class="small text-muted mb-1">เบอร์โทรศัพท์</label>
       <input type="text" id="edit-phone" class="form-control" autocomplete="off">
-      
       <div class="d-flex gap-2 mt-3">
-        <button class="btn btn-light flex-grow-1 py-2" style="border-radius:12px" onclick="closeModal('edit-user-modal')">ยกเลิก</button>
-        <button class="btn btn-primary flex-grow-1 py-2 border-0" style="border-radius:12px; background: var(--primary-blue);" onclick="submitEditUser()">บันทึกการแก้ไข</button>
+        <button class="btn btn-light flex-grow-1 py-2" style="border-radius:12px" onclick="closeModal('edit-user-modal')">ยกเลิก (Esc)</button>
+        <button class="btn btn-primary flex-grow-1 py-2 border-0" style="border-radius:12px; background: var(--primary-blue);" onclick="submitEditUser()">บันทึกแก้ไข (Enter)</button>
       </div>
     </div>
   </div>
@@ -169,9 +167,29 @@
       roleSelect.innerHTML = (ROLE === 'super_admin' ? '<option value="super_admin">Super Admin</option><option value="admin">Admin</option>' : '') + 
                               '<option value="technician">Technician</option><option value="resident">Resident</option>';
       fetchUsers();
+
+      // ⌨️ Keyboard Listeners (Enter to Confirm / Esc to Cancel)
+      window.addEventListener('keydown', (e) => {
+        // หากเปิด Modal ใดๆ อยู่
+        const addModal = document.getElementById('add-user-modal');
+        const editModal = document.getElementById('edit-user-modal');
+        const luxModal = document.getElementById('lux-modal');
+
+        if (e.key === 'Escape') {
+          if (addModal.classList.contains('show')) closeModal('add-user-modal');
+          if (editModal.classList.contains('show')) closeModal('edit-user-modal');
+          if (luxModal.classList.contains('show')) closeModal('lux-modal');
+        }
+
+        if (e.key === 'Enter') {
+          if (addModal.classList.contains('show')) submitNewUser();
+          else if (editModal.classList.contains('show')) submitEditUser();
+          else if (luxModal.classList.contains('show')) document.getElementById('lux-confirm').click();
+        }
+      });
     });
 
-    // ฟังก์ชันอื่นๆ คงเดิม...
+    // --- ฟังก์ชันดึงข้อมูลตาราง ---
     async function fetchUsers() {
       const tbody = document.getElementById('user-table-body');
       try {
@@ -191,9 +209,10 @@
             </tr>`;
           });
         }
-      } catch (e) { tbody.innerHTML = '<tr><td colspan="5">เกิดข้อผิดพลาด</td></tr>'; }
+      } catch (e) { tbody.innerHTML = '<tr><td colspan="5">เกิดข้อผิดพลาดในการโหลด</td></tr>'; }
     }
 
+    // --- ระบบบันทึกผู้ใช้ใหม่ ---
     async function submitNewUser() {
       const data = { 
         action: "createUser", callerRole: ROLE, 
@@ -202,19 +221,21 @@
         fullName: document.getElementById('new-fullname').value, 
         phone: document.getElementById('new-phone').value 
       };
-      if (!data.username || !data.fullName) return alert("กรุณากรอกข้อมูลหลักให้ครบ");
+      if (!data.username || !data.fullName) return alert("กรุณากรอกข้อมูลให้ครบถ้วน");
+      
       const res = await fetch(WEB_APP_URL, { method: "POST", body: JSON.stringify(data) });
       const r = await res.json();
-      alert(r.message); if(r.success) { 
-        // ล้างข้อมูลหลังบันทึกสำเร็จ (เพื่อความสะอาด)
+      if(r.success) {
         document.getElementById('new-username').value = '';
         document.getElementById('new-fullname').value = '';
         document.getElementById('new-phone').value = '';
-        closeModal('add-user-modal'); 
-        fetchUsers(); 
+        closeModal('add-user-modal');
+        fetchUsers();
       }
+      alert(r.message);
     }
 
+    // --- ระบบแก้ไขข้อมูล ---
     function openEditModal(id, name, phone) {
       document.getElementById('edit-id').value = id;
       document.getElementById('edit-id-display').value = id;
@@ -232,16 +253,19 @@
       };
       const res = await fetch(WEB_APP_URL, { method: "POST", body: JSON.stringify(data) });
       const r = await res.json();
-      alert(r.message); if(r.success) { closeModal('edit-user-modal'); fetchUsers(); }
+      if(r.success) { closeModal('edit-user-modal'); fetchUsers(); }
+      alert(r.message);
     }
 
+    // --- ระบบลบและรีเซ็ต ---
     function deleteU(id, name) {
       openLuxModal({
-        title: "ลบผู้ใช้ถาวร?", message: `ยืนยันการลบคุณ ${name} (${id})? ย้อนคืนไม่ได้นะ!`, type: "danger",
+        title: "ลบผู้ใช้ถาวร?", message: `ยืนยันการลบคุณ ${name} (${id})? ข้อมูลจะหายไปถาวร!`, type: "danger",
         onConfirm: async () => {
           const res = await fetch(WEB_APP_URL, { method: "POST", body: JSON.stringify({ action: "deleteUser", userId: id, callerRole: ROLE }) });
           const r = await res.json();
-          alert(r.message); if(r.success) fetchUsers();
+          if(r.success) fetchUsers();
+          alert(r.message);
         }
       });
     }
@@ -257,13 +281,16 @@
       });
     }
 
+    // --- ระบบควบคุม Modal (Luxury Style) ---
     function openModal(id) {
-      document.getElementById(id).style.display = 'flex';
-      setTimeout(() => document.getElementById(id).classList.add('show'), 10);
+      const modal = document.getElementById(id);
+      modal.style.display = 'flex';
+      setTimeout(() => modal.classList.add('show'), 10);
     }
     function closeModal(id) {
-      document.getElementById(id).classList.remove('show');
-      setTimeout(() => document.getElementById(id).style.display = 'none', 300);
+      const modal = document.getElementById(id);
+      modal.classList.remove('show');
+      setTimeout(() => modal.style.display = 'none', 300);
     }
     function openLuxModal(opts) {
       document.getElementById('lux-title').innerText = opts.title;
