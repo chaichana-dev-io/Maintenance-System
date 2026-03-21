@@ -3,321 +3,69 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Admin Panel | เจริญกรุงคอนโดมิเนียม 3</title>
-  
+  <title>Admin Panel | เจริญกรุงคอนโด 3</title>
   <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
-  
   <script>
     const userData = JSON.parse(localStorage.getItem('ck3_user'));
-    if (!userData || (userData.role.toLowerCase() === 'resident')) {
-      window.location.href = "index.html"; 
-    }
+    if (!userData || userData.role === 'resident') window.location.href = "index.html";
     const ROLE = userData.role.toLowerCase();
-    // *** ใช้ URL Web App ล่าสุดของคุณ ***
-    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbx4p9vecJqsvZGmSlRE-LAPYNC2MvKmzai0uLjSNCkDp73T_NgW11bWD9Qa6z-G3xTdJw/exec";
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxC4-hg0DJCuwe5xWp3ZWMLCEXxtCTdBjkLe_Qt1XUMFUIvEE_un7HgYyJFZsBBU3uygw/exec";
   </script>
-
   <style>
     :root { --primary-blue: #1800ad; --deep-blue: #0c005a; --gold-primary: #d4af37; --gold-light: #f1e3a0; --sidebar-width: 280px; }
-    body { font-family: 'Prompt', sans-serif; background-color: #f4f7f6; margin: 0; overflow-x: hidden; }
-
-    /* Sidebar */
-    #sidebar { width: var(--sidebar-width); background: linear-gradient(180deg, var(--deep-blue) 0%, var(--primary-blue) 100%); color: white; position: fixed; height: 100vh; padding: 30px 15px; z-index: 1000; }
+    body { font-family: 'Prompt', sans-serif; background-color: #f4f7f6; margin: 0; }
+    #sidebar { width: var(--sidebar-width); background: linear-gradient(180deg, var(--deep-blue) 0%, var(--primary-blue) 100%); color: white; position: fixed; height: 100vh; padding: 30px 15px; }
     .sidebar-brand { text-align: center; margin-bottom: 40px; }
-    .sidebar-brand img { max-width: 150px; filter: drop-shadow(0 0 15px rgba(212,175,55,0.4)); }
-    .logo-text { color: var(--gold-light); font-size: 1.2rem; font-weight: 500; margin-top: 12px; letter-spacing: 1px; }
-
+    .sidebar-brand img { max-width: 140px; filter: drop-shadow(0 0 15px rgba(212,175,55,0.4)); }
+    .logo-text { color: var(--gold-light); font-size: 1.1rem; margin-top: 10px; }
     .nav-item { padding: 14px 20px; color: rgba(255,255,255,0.7); text-decoration: none; display: flex; align-items: center; border-radius: 15px; margin-bottom: 8px; transition: 0.3s; cursor: pointer; }
-    .nav-item:hover { background: rgba(212, 175, 55, 0.1); color: var(--gold-light); }
-    .nav-item.active { background: var(--gold-primary); color: var(--deep-blue); font-weight: 600; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
-    .nav-item i { width: 25px; margin-right: 12px; font-size: 1.1rem; text-align: center; }
-
-    /* Main Content */
+    .nav-item:hover, .nav-item.active { background: rgba(255, 255, 255, 0.1); color: var(--gold-light); }
+    .nav-item.active { background: var(--gold-primary); color: var(--deep-blue); font-weight: 600; }
     #main-content { margin-left: var(--sidebar-width); padding: 40px; min-height: 100vh; display: flex; flex-direction: column; }
-    .content-wrapper { flex: 1; }
-    .header-top { display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px; }
-    .admin-profile { background: white; padding: 10px 20px; border-radius: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); cursor: pointer; }
-
-    /* Dashboard Cards */
-    .stat-card { background: white; border-radius: 25px; padding: 25px; border: none; box-shadow: 0 4px 20px rgba(0,0,0,0.03); text-align: center; transition: 0.3s; height: 100%; }
-    .stat-card:hover { transform: translateY(-5px); }
-    .stat-card h2 { color: var(--deep-blue); font-weight: 600; margin: 10px 0; }
-    .welcome-banner { background: linear-gradient(90deg, var(--deep-blue), var(--primary-blue)); color: white; padding: 40px; border-radius: 25px; position: relative; margin-top: 30px; }
-
-    /* Table & Forms */
-    .table-container, .form-container { background: white; border-radius: 25px; padding: 30px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); }
-    .btn-action { width: 38px; height: 38px; border-radius: 12px; border: none; margin: 2px; transition: 0.2s; display: inline-flex; align-items: center; justify-content: center; }
-    .btn-edit { background: #e3f2fd; color: #1976d2; }
-    .btn-reset { background: #fff3e0; color: #f57c00; }
-    .btn-delete { background: #ffebee; color: #d32f2f; }
-
-    /* Modal */
-    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(12, 0, 90, 0.7); backdrop-filter: blur(8px); z-index: 10000; align-items: center; justify-content: center; opacity: 0; transition: 0.3s; }
-    .modal-overlay.show { opacity: 1; display: flex; }
-    .modal-card { background: white; width: 90%; max-width: 420px; padding: 40px 30px; border-radius: 35px; text-align: center; transform: scale(0.8); transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
-    .modal-overlay.show .modal-card { transform: scale(1); }
-    .modal-icon { width: 80px; height: 80px; margin: 0 auto 20px; background: var(--primary-blue); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 2rem; }
-    .modal-icon.danger { background: #ff5252; }
-
-    /* Sections */
-    .content-section { display: none; }
-    .content-section.active { display: block; animation: sectionFade 0.5s ease; }
-    @keyframes sectionFade { from { opacity: 0; transform: translateY(15px); } to { opacity: 1; transform: translateY(0); } }
-    
-    .footer { text-align: center; padding: 25px 0 10px 0; color: rgba(0,0,0,0.4); font-size: 0.85rem; margin-top: auto; }
+    .stat-card { background: white; border-radius: 25px; padding: 25px; text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.03); }
+    .welcome-banner { background: linear-gradient(90deg, var(--deep-blue), var(--primary-blue)); color: white; padding: 40px; border-radius: 25px; margin-top: 30px; position: relative; }
+    .footer { text-align: center; padding: 20px; color: rgba(0,0,0,0.4); font-size: 0.85rem; margin-top: auto; }
   </style>
 </head>
 <body>
-
   <aside id="sidebar">
-    <div class="sidebar-brand">
-      <img src="https://img1.pic.in.th/images/logo310c09ae65f63ac1d.png" alt="Logo">
-      <div class="logo-text">ระบบแจ้งซ่อม</div>
-    </div>
+    <div class="sidebar-brand"><img src="https://img1.pic.in.th/images/logo310c09ae65f63ac1d.png" alt="Logo"><div class="logo-text">ระบบแจ้งซ่อม</div></div>
     <nav>
-      <div class="nav-item active" onclick="switchSection('dashboard', this)"><i class="fas fa-th-large"></i> แดชบอร์ด</div>
-      <div class="nav-item" onclick="switchSection('repairs', this)"><i class="fas fa-tools"></i> งานแจ้งซ่อม</div>
-      <div id="nav-users" class="nav-item" style="display:none" onclick="switchSection('users', this)"><i class="fas fa-users-cog"></i> จัดการผู้ใช้</div>
-      <div class="nav-item" onclick="switchSection('profile', this)"><i class="fas fa-user-circle"></i> ข้อมูลส่วนตัว</div>
-      <div id="nav-super-only" style="display: none;">
-        <hr style="border-color: rgba(212,175,55,0.2);">
-        <div class="nav-item" onclick="switchSection('reports', this)"><i class="fas fa-chart-pie"></i> รายงานเชิงลึก</div>
-        <div class="nav-item" onclick="switchSection('settings', this)"><i class="fas fa-cogs"></i> ตั้งค่าระบบ</div>
-      </div>
-      <hr style="border-color: rgba(212,175,55,0.2); margin: 20px 0;">
-      <div class="nav-item text-warning" onclick="logout()"><i class="fas fa-sign-out-alt"></i> ออกจากระบบ</div>
+      <a href="admin.html" class="nav-item active"><i class="fas fa-th-large me-2"></i> แดชบอร์ด</a>
+      <a href="repairs/" class="nav-item"><i class="fas fa-tools me-2"></i> งานแจ้งซ่อม</a>
+      <a id="nav-users" href="users/" class="nav-item" style="display:none"><i class="fas fa-users-cog me-2"></i> จัดการผู้ใช้</a>
+      <a href="profile.html" class="nav-item"><i class="fas fa-user-circle me-2"></i> ข้อมูลส่วนตัว</a>
+      <hr><div class="nav-item text-warning" onclick="logout()"><i class="fas fa-sign-out-alt me-2"></i> ออกจากระบบ</div>
     </nav>
   </aside>
-
   <main id="main-content">
-    <div class="content-wrapper">
-      <header class="header-top">
-        <div>
-          <h2 id="section-title" style="color: var(--deep-blue); font-weight: 600;">แดชบอร์ดหลัก</h2>
-          <p class="text-muted mb-0">สวัสดี, <span id="admin-name-span" class="fw-bold">...</span> (<span id="role-display" class="text-primary"></span>)</p>
-        </div>
-        <div class="admin-profile" onclick="switchSection('profile', null)"><i class="fas fa-user-shield me-2 text-primary"></i> ONLINE</div>
-      </header>
-
-      <div id="section-dashboard" class="content-section active">
-        <div class="row g-4">
-          <div class="col-md-3"><div class="stat-card">
-            <div style="color: #ff5252; font-size: 1.5rem;"><i class="fas fa-clock"></i></div>
-            <h2 id="stat-pending">...</h2><div class="text-muted small">งานรอดำเนินการ</div>
-          </div></div>
-          <div class="col-md-3"><div class="stat-card">
-            <div style="color: #2196f3; font-size: 1.5rem;"><i class="fas fa-sync"></i></div>
-            <h2 id="stat-progress">...</h2><div class="text-muted small">กำลังดำเนินการ</div>
-          </div></div>
-          <div class="col-md-3"><div class="stat-card">
-            <div style="color: #4caf50; font-size: 1.5rem;"><i class="fas fa-check-double"></i></div>
-            <h2 id="stat-done">...</h2><div class="text-muted small">เสร็จสิ้นภารกิจ</div>
-          </div></div>
-          <div class="col-md-3"><div class="stat-card">
-            <div style="color: #ffc107; font-size: 1.5rem;"><i class="fas fa-users"></i></div>
-            <h2 id="stat-residents">...</h2><div class="text-muted small">ลูกบ้านทั้งหมด</div>
-          </div></div>
-        </div>
-        <div class="welcome-banner">
-          <h3>ยินดีต้อนรับสู่ระบบ รับแจ้งซ่อม เจริญกรุงคอนโด อาคาร3</h3>
-          <p id="welcome-msg" class="mb-0">กำลังเชื่อมต่อฐานข้อมูล...</p>
-        </div>
-      </div>
-
-      <div id="section-users" class="content-section">
-        <div class="d-flex justify-content-between mb-4">
-          <h4>จัดการบัญชีผู้ใช้งาน</h4>
-          <button class="btn btn-primary shadow-sm" style="border-radius:12px" onclick="openAddUserModal()">+ เพิ่มผู้ใช้ใหม่</button>
-        </div>
-        <div class="table-container">
-          <table class="table align-middle">
-            <thead><tr><th>ID</th><th>Username</th><th>ชื่อ-นามสกุล</th><th>บทบาท</th><th class="text-center">จัดการ</th></tr></thead>
-            <tbody id="user-table-body"></tbody>
-          </table>
-        </div>
-      </div>
-
-      <div id="section-profile" class="content-section">
-        <div class="form-container">
-          <h4 class="mb-4"><i class="fas fa-user-edit me-2"></i> แก้ไขข้อมูลส่วนตัว</h4>
-          <div class="row g-3">
-            <div class="col-md-6"><label class="form-label small text-muted">ชื่อ-นามสกุล</label><input type="text" id="p-name" class="form-control form-control-lg" style="border-radius:12px"></div>
-            <div class="col-md-6"><label class="form-label small text-muted">เบอร์โทรศัพท์</label><input type="text" id="p-phone" class="form-control form-control-lg" style="border-radius:12px"></div>
-            <hr class="my-4">
-            <div class="col-12"><p class="text-primary fw-bold mb-1">เปลี่ยนรหัสผ่าน</p><p class="small text-muted mb-3">* เว้นว่างไว้หากไม่ต้องการเปลี่ยน</p></div>
-            <div class="col-md-4"><label class="form-label small">รหัสผ่านเดิม</label><input type="password" id="p-old-pw" class="form-control" style="border-radius:10px"></div>
-            <div class="col-md-4"><label class="form-label small">รหัสผ่านใหม่</label><input type="password" id="p-new-pw" class="form-control" style="border-radius:10px"></div>
-            <div class="col-md-4"><label class="form-label small">ยืนยันรหัสผ่านใหม่</label><input type="password" id="p-confirm-pw" class="form-control" style="border-radius:10px"></div>
-            <div class="col-12 mt-4 text-end"><button class="btn btn-primary px-5 py-2 shadow" style="border-radius:12px" onclick="saveProfile()">บันทึกข้อมูล (Enter)</button></div>
-          </div>
-        </div>
-      </div>
-
-      <div id="section-repairs" class="content-section"><h4>งานแจ้งซ่อม</h4><p class="text-muted">กำลังพัฒนาส่วนแสดงผลงานซ่อม...</p></div>
-      <div id="section-reports" class="content-section"><h4>รายงานเชิงลึก</h4><p class="text-muted">เฉพาะ Super Admin เท่านั้น</p></div>
-      <div id="section-settings" class="content-section"><h4>ตั้งค่าระบบ</h4><p class="text-muted">เฉพาะ Super Admin เท่านั้น</p></div>
+    <header class="header-top d-flex justify-content-between">
+      <div><h2>แดชบอร์ดหลัก</h2><p class="text-muted">สวัสดี คุณ <span id="admin-name"></span></p></div>
+    </header>
+    <div class="row g-4 mt-2">
+      <div class="col-md-3"><div class="stat-card"><h2><span id="s-pending">0</span></h2><div>รอดำเนินการ</div></div></div>
+      <div class="col-md-3"><div class="stat-card"><h2><span id="s-progress">0</span></h2><div>กำลังซ่อม</div></div></div>
+      <div class="col-md-3"><div class="stat-card"><h2><span id="s-done">0</span></h2><div>เสร็จสิ้น</div></div></div>
+      <div class="col-md-3"><div class="stat-card"><h2><span id="s-residents">0</span></h2><div>ลูกบ้าน</div></div></div>
     </div>
-
+    <div class="welcome-banner"><h3>ยินดีต้อนรับสู่ระบบ CK3</h3><p>ระบบบริหารจัดการงานซ่อมบำรุงอาคารแบบครบวงจร</p></div>
     <footer class="footer">© 2026 Charoen Krung Condominium 3 | บริหารจัดการโดยนิติบุคคล</footer>
   </main>
-
-  <div id="lux-modal" class="modal-overlay">
-    <div class="modal-card">
-      <div id="lux-icon-box" class="modal-icon"><i id="lux-icon" class="fas fa-question"></i></div>
-      <h3 id="lux-title" class="fw-bold"></h3>
-      <p id="lux-message" class="text-muted mb-4"></p>
-      <div class="d-flex gap-3 justify-content-center">
-        <button id="lux-cancel" class="btn btn-light px-4" style="border-radius:12px">ยกเลิก (Esc)</button>
-        <button id="lux-confirm" class="btn btn-primary px-4" style="border-radius:12px">ตกลง (Enter)</button>
-      </div>
-    </div>
-  </div>
-
   <script>
-    let modalAction = null;
-
-    document.addEventListener('DOMContentLoaded', () => {
-      // Setup Initial UI
-      document.getElementById('admin-name-span').innerText = userData.full_name;
-      document.getElementById('role-display').innerText = ROLE.toUpperCase();
-      document.getElementById('p-name').value = userData.full_name;
-
-      if (ROLE === 'super_admin') { 
-        document.getElementById('nav-users').style.display = 'flex'; 
-        document.getElementById('nav-super-only').style.display = 'block'; 
-      } else if (ROLE === 'admin') { 
-        document.getElementById('nav-users').style.display = 'flex'; 
-      }
-
-      fetchDashboard();
-
-      // Global Key Listeners
-      window.addEventListener('keydown', (e) => {
-        if (document.getElementById('lux-modal').classList.contains('show')) {
-          if (e.key === 'Enter') document.getElementById('lux-confirm').click();
-          if (e.key === 'Escape') closeLuxModal();
-        } else if (e.key === 'Enter' && document.getElementById('section-profile').classList.contains('active')) {
-          saveProfile();
+    document.getElementById('admin-name').innerText = userData.full_name;
+    if(ROLE !== 'technician') document.getElementById('nav-users').style.display = 'flex';
+    fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'getDashboardStats', callerRole: ROLE }) })
+      .then(r => r.json()).then(res => {
+        if(res.success) {
+          document.getElementById('s-pending').innerText = res.stats.pending;
+          document.getElementById('s-progress').innerText = res.stats.inProgress;
+          document.getElementById('s-done').innerText = res.stats.done;
+          document.getElementById('s-residents').innerText = res.stats.residents;
         }
       });
-    });
-
-    async function fetchDashboard() {
-      try {
-        const response = await fetch(WEB_APP_URL, { 
-          method: "POST", 
-          body: JSON.stringify({ action: "getDashboardStats", callerRole: ROLE }) 
-        });
-        const r = await response.json();
-        if (r.success) {
-          document.getElementById('stat-pending').innerText = r.stats.pending;
-          document.getElementById('stat-progress').innerText = r.stats.inProgress;
-          document.getElementById('stat-done').innerText = r.stats.done;
-          document.getElementById('stat-residents').innerText = r.stats.residents;
-          document.getElementById('welcome-msg').innerText = `ระบบทำงานปกติ มีงานรอดำเนินการ ${r.stats.pending} รายการ`;
-        }
-      } catch (e) { console.error("Dashboard Stats Error:", e); }
-    }
-
-    async function fetchUsers() {
-      const tbody = document.getElementById('user-table-body');
-      tbody.innerHTML = '<tr><td colspan="5" class="text-center py-5"><div class="spinner-border text-primary"></div></td></tr>';
-      try {
-        const res = await fetch(WEB_APP_URL, { 
-          method: "POST", 
-          body: JSON.stringify({ action: "fetchUsers", callerRole: ROLE }) 
-        });
-        const r = await res.json();
-        if (r.success) {
-          tbody.innerHTML = '';
-          r.users.forEach(u => {
-            let btns = `<button class="btn-action btn-edit" title="แก้ไข"><i class="fas fa-pen"></i></button>`;
-            if (ROLE === 'super_admin') btns += `<button class="btn-action btn-reset" onclick="resetPw('${u[1]}')" title="Reset PW"><i class="fas fa-key"></i></button>`;
-            if (ROLE === 'super_admin' || ROLE === 'admin') btns += `<button class="btn-action btn-delete" onclick="deleteU('${u[0]}', '${u[3]}')" title="ลบ"><i class="fas fa-trash"></i></button>`;
-            
-            tbody.innerHTML += `<tr>
-              <td><small class="text-muted">${u[0]}</small></td>
-              <td><strong>${u[1]}</strong></td>
-              <td>${u[3]}</td>
-              <td><span class="badge ${u[5]==='resident'?'bg-info text-dark':'bg-dark'} px-3">${u[5]}</span></td>
-              <td class="text-center">${btns}</td>
-            </tr>`;
-          });
-        }
-      } catch (e) { tbody.innerHTML = '<tr><td colspan="5" class="text-center text-danger">ไม่สามารถโหลดข้อมูลผู้ใช้ได้</td></tr>'; }
-    }
-
-    async function saveProfile() {
-      const name = document.getElementById('p-name').value;
-      const phone = document.getElementById('p-phone').value;
-      const oldPw = document.getElementById('p-old-pw').value;
-      const newPw = document.getElementById('p-new-pw').value;
-      const confirmPw = document.getElementById('p-confirm-pw').value;
-
-      if (!name) return alert("กรุณากรอกชื่อ");
-      if (newPw && newPw !== confirmPw) return alert("รหัสผ่านใหม่ไม่ตรงกัน");
-      
-      openLuxModal({
-        title: "ยืนยันการบันทึก?",
-        message: "คุณต้องการอัปเดตข้อมูลส่วนตัวใช่หรือไม่?",
-        onConfirm: async () => {
-          const res = await fetch(WEB_APP_URL, {
-            method: "POST",
-            body: JSON.stringify({
-              action: "updateProfile", userId: userData.user_id, fullName: name, phone: phone, 
-              oldPassword: oldPw, newPassword: newPw
-            })
-          });
-          const r = await res.json();
-          if (r.success) {
-            userData.full_name = name;
-            localStorage.setItem('ck3_user', JSON.stringify(userData));
-            alert(r.message);
-            if (newPw) { localStorage.removeItem('ck3_user'); window.location.href="index.html"; }
-            else location.reload();
-          } else { alert(r.message); }
-        }
-      });
-    }
-
-    function switchSection(id, el) {
-      document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
-      document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
-      document.getElementById('section-' + id).classList.add('active');
-      if (el) el.classList.add('active');
-      const titles = { dashboard: 'แดชบอร์ดหลัก', users: 'จัดการผู้ใช้งาน', profile: 'ข้อมูลส่วนตัว', repairs: 'งานแจ้งซ่อม', reports: 'รายงาน', settings: 'ตั้งค่า' };
-      document.getElementById('section-title').innerText = titles[id];
-      if (id === 'users') fetchUsers();
-      if (id === 'dashboard') fetchDashboard();
-    }
-
-    function openLuxModal(opts) {
-      document.getElementById('lux-title').innerText = opts.title;
-      document.getElementById('lux-message').innerText = opts.message;
-      const iconBox = document.getElementById('lux-icon-box');
-      if (opts.type === 'danger') { iconBox.classList.add('danger'); document.getElementById('lux-icon').className = 'fas fa-exclamation-triangle'; }
-      else { iconBox.classList.remove('danger'); document.getElementById('lux-icon').className = 'fas fa-question'; }
-      const modal = document.getElementById('lux-modal');
-      modal.style.display = 'flex'; setTimeout(() => modal.classList.add('show'), 10);
-      modalAction = opts.onConfirm;
-    }
-
-    function closeLuxModal() {
-      const modal = document.getElementById('lux-modal');
-      modal.classList.remove('show'); setTimeout(() => modal.style.display = 'none', 300);
-    }
-
-    document.getElementById('lux-confirm').onclick = () => { if (modalAction) modalAction(); closeLuxModal(); };
-    document.getElementById('lux-cancel').onclick = closeLuxModal;
-
-    function logout() {
-      openLuxModal({ title: 'ออกจากระบบ?', message: 'คุณต้องการสิ้นสุดการทำงานใช่หรือไม่?', onConfirm: () => { localStorage.removeItem('ck3_user'); window.location.href = "index.html"; } });
-    }
-    
-    function resetPw(name) { openLuxModal({ title: 'รีเซ็ตรหัสผ่าน', message: `ยืนยันรีเซ็ตรหัสของ ${name} เป็นค่าเริ่มต้น?`, onConfirm: () => alert('ฟังก์ชัน API กำลังเชื่อมต่อ...') }); }
-    function deleteU(id, name) { openLuxModal({ title: 'ลบผู้ใช้ถาวร!', message: `ต้องการลบข้อมูลของ ${name} หรือไม่? การกระทำนี้ย้อนคืนไม่ได้`, type: 'danger', onConfirm: () => alert('ฟังก์ชัน API กำลังเชื่อมต่อ...') }); }
+    function logout() { if(confirm("ออกจากระบบ?")) { localStorage.removeItem('ck3_user'); window.location.href="index.html"; } }
   </script>
 </body>
 </html>
