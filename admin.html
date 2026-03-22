@@ -20,30 +20,21 @@
     .sidebar-brand { text-align: center; margin-bottom: 40px; }
     .sidebar-brand img { max-width: 140px; filter: drop-shadow(0 0 15px rgba(212, 175, 55, 0.4)); }
     .logo-text { color: var(--gold-light); font-size: 1.1rem; margin-top: 10px; }
-    
     .nav-item { padding: 14px 20px; color: rgba(255,255,255,0.7); text-decoration: none; display: flex; align-items: center; border-radius: 15px; margin-bottom: 8px; transition: 0.3s; cursor: pointer; }
-    .nav-item:hover { background: rgba(255, 255, 255, 0.1); color: var(--gold-light); text-decoration: none; }
+    .nav-item:hover, .nav-item.active { background: rgba(255, 255, 255, 0.1); color: var(--gold-light); text-decoration: none; }
     .nav-item.active { background: var(--gold-primary); color: var(--deep-blue); font-weight: 600; }
-    
     #main-content { margin-left: var(--sidebar-width); padding: 40px; min-height: 100vh; display: flex; flex-direction: column; }
-    .stat-card { background: white; border-radius: 25px; padding: 25px; text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.05); }
+    .stat-card { background: white; border-radius: 25px; padding: 25px; text-align: center; box-shadow: 0 4px 20px rgba(0,0,0,0.03); }
     .stat-card h2 { color: var(--deep-blue); font-weight: 600; margin: 10px 0; }
-    .welcome-banner { background: linear-gradient(90deg, var(--deep-blue), var(--primary-blue)); color: white; padding: 40px; border-radius: 25px; margin-top: 30px; box-shadow: 0 10px 30px rgba(24, 0, 173, 0.2); }
-    
-    /* 💎 Luxury Modal */
     .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(12, 0, 90, 0.7); backdrop-filter: blur(8px); z-index: 10000; align-items: center; justify-content: center; opacity: 0; transition: 0.3s; }
     .modal-overlay.show { opacity: 1; display: flex; }
     .modal-card { background: white; width: 95%; max-width: 400px; padding: 35px; border-radius: 35px; text-align: center; box-shadow: 0 25px 50px rgba(0,0,0,0.4); transform: scale(0.8); transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
     .modal-overlay.show .modal-card { transform: scale(1); }
-    .modal-icon { width: 70px; height: 70px; margin: 0 auto 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: white; }
-    .modal-icon.warning { background: #fbc02d; }
-    .modal-icon.primary { background: var(--primary-blue); }
-
+    .modal-icon { width: 70px; height: 70px; margin: 0 auto 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: white; background: #fbc02d; }
     .footer { text-align: center; padding: 20px; color: rgba(0,0,0,0.4); font-size: 0.85rem; margin-top: auto; }
   </style>
 </head>
 <body>
-
   <aside id="sidebar">
     <div class="sidebar-brand"><img src="https://img1.pic.in.th/images/logo310c09ae65f63ac1d.png" alt="Logo"><div class="logo-text">ระบบแจ้งซ่อม</div></div>
     <nav>
@@ -51,62 +42,37 @@
       <a href="repairs/" class="nav-item"><i class="fas fa-tools me-2"></i> งานแจ้งซ่อม</a>
       <a id="nav-users" href="users/" class="nav-item" style="display:none"><i class="fas fa-users-cog me-2"></i> จัดการผู้ใช้</a>
       <a href="profile/" class="nav-item"><i class="fas fa-user-circle me-2"></i> ข้อมูลส่วนตัว</a>
-      <hr style="border-color: rgba(255,255,255,0.1); margin: 20px 0;">
-      <div class="nav-item text-warning" onclick="confirmLogout()"><i class="fas fa-sign-out-alt me-2"></i> ออกจากระบบ</div>
+      <hr style="border-color: rgba(255,255,255,0.1); margin: 20px 0;"><div class="nav-item text-warning" onclick="confirmLogout()"><i class="fas fa-sign-out-alt me-2"></i> ออกจากระบบ</div>
     </nav>
   </aside>
 
   <main id="main-content">
-    <header class="header-top mb-4">
-      <h2 style="color: var(--deep-blue); font-weight: 600;">แดชบอร์ดหลัก</h2>
-      <p class="text-muted">สวัสดี คุณ <span class="fw-bold text-primary" id="admin-name"></span></p>
-    </header>
-
+    <header class="mb-4"><h2>แดชบอร์ดหลัก</h2><p class="text-muted">สวัสดี คุณ <span class="fw-bold text-primary" id="admin-name"></span></p></header>
     <div class="row g-4">
-      <div class="col-md-3"><div class="stat-card"><h2><span id="s-pending">0</span></h2><div class="small text-muted">รอดำเนินการ</div></div></div>
-      <div class="col-md-3"><div class="stat-card"><h2><span id="s-progress">0</span></h2><div class="small text-muted">กำลังซ่อม</div></div></div>
-      <div class="col-md-3"><div class="stat-card"><h2><span id="s-done">0</span></h2><div class="small text-muted">เสร็จสิ้น</div></div></div>
-      <div class="col-md-3"><div class="stat-card"><h2><span id="s-residents">0</span></h2><div class="small text-muted">ลูกบ้าน</div></div></div>
+      <div class="col-md-3"><div class="stat-card"><h2><span id="s-pending">0</span></h2><div class="small">รอดำเนินการ</div></div></div>
+      <div class="col-md-3"><div class="stat-card"><h2><span id="s-progress">0</span></h2><div class="small">กำลังซ่อม</div></div></div>
+      <div class="col-md-3"><div class="stat-card"><h2><span id="s-done">0</span></h2><div class="small">เสร็จสิ้น</div></div></div>
+      <div class="col-md-3"><div class="stat-card"><h2><span id="s-residents">0</span></h2><div class="small">ลูกบ้าน</div></div></div>
     </div>
-
-    <div class="welcome-banner">
-      <h3>ยินดีต้อนรับสู่ระบบ CK3</h3>
-      <p class="mb-0">ระบบบริหารจัดการงานซ่อมบำรุงอาคาร เจริญกรุงคอนโดมิเนียม 3</p>
-    </div>
-
-    <footer class="footer">© 2026 Charoen Krung Condominium 3 | บริหารจัดการโดยนิติบุคคล</footer>
+    <footer class="footer">© 2026 Charoen Krung Condominium 3</footer>
   </main>
 
   <div id="lux-modal" class="modal-overlay">
     <div class="modal-card">
-      <div id="lux-icon-box" class="modal-icon warning"><i id="lux-icon" class="fas fa-sign-out-alt"></i></div>
-      <h4 id="lux-title" class="fw-bold">ออกจากระบบ?</h4>
-      <p id="lux-message" class="text-muted mb-4">คุณต้องการสิ้นสุดการทำงานใช่หรือไม่?</p>
+      <div class="modal-icon"><i class="fas fa-sign-out-alt"></i></div>
+      <h4 class="fw-bold">ออกจากระบบ?</h4>
+      <p class="text-muted mb-4">คุณต้องการสิ้นสุดการทำงานใช่หรือไม่?</p>
       <div class="d-flex gap-2">
-        <button class="btn btn-light flex-grow-1" style="border-radius:12px" onclick="closeLuxModal()">ยกเลิก</button>
-        <button id="lux-confirm" class="btn btn-primary flex-grow-1 border-0" style="border-radius:12px; background:var(--primary-blue);">ตกลง</button>
+        <button class="btn btn-light flex-grow-1" style="border-radius:12px" onclick="closeModal()">ยกเลิก</button>
+        <button id="logout-confirm" class="btn btn-primary flex-grow-1 border-0" style="border-radius:12px; background:var(--primary-blue);">ตกลง</button>
       </div>
     </div>
   </div>
 
   <script>
-    let modalAction = null;
     document.getElementById('admin-name').innerText = userData.full_name;
-    
-    if(ROLE !== 'technician') {
-      document.getElementById('nav-users').style.display = 'flex';
-    }
+    if(ROLE !== 'technician') document.getElementById('nav-users').style.display = 'flex';
 
-    // ⌨️ Keyboard Control (Enter/Esc) สำหรับ Popup เท่านั้น
-    window.addEventListener('keydown', (e) => {
-      const modal = document.getElementById('lux-modal');
-      if (modal.classList.contains('show')) {
-        if (e.key === 'Escape') closeLuxModal();
-        if (e.key === 'Enter') document.getElementById('lux-confirm').click();
-      }
-    });
-
-    // Dashboard Fetch
     function fetchStats() {
       fetch(WEB_APP_URL, { method: 'POST', body: JSON.stringify({ action: 'getDashboardStats', callerRole: ROLE }) })
         .then(r => r.json()).then(res => {
@@ -119,26 +85,23 @@
         });
     }
 
-    // Logout Modal
     function confirmLogout() {
-      const m = document.getElementById('lux-modal');
-      m.style.display = 'flex';
-      setTimeout(() => m.classList.add('show'), 10);
-      modalAction = () => {
-        localStorage.removeItem('ck3_user');
-        window.location.href="index.html";
-      };
+      document.getElementById('lux-modal').style.display = 'flex';
+      setTimeout(() => document.getElementById('lux-modal').classList.add('show'), 10);
     }
-
-    function closeLuxModal() {
-      const m = document.getElementById('lux-modal');
-      m.classList.remove('show');
-      setTimeout(() => m.style.display = 'none', 300);
+    function closeModal() {
+      document.getElementById('lux-modal').classList.remove('show');
+      setTimeout(() => document.getElementById('lux-modal').style.display = 'none', 300);
     }
+    document.getElementById('logout-confirm').onclick = () => { localStorage.removeItem('ck3_user'); window.location.href="index.html"; };
+    
+    window.addEventListener('keydown', (e) => {
+      if (document.getElementById('lux-modal').classList.contains('show')) {
+        if (e.key === 'Escape') closeModal();
+        if (e.key === 'Enter') document.getElementById('logout-confirm').click();
+      }
+    });
 
-    document.getElementById('lux-confirm').onclick = () => { if(modalAction) modalAction(); };
-
-    // Initial Load
     fetchStats();
   </script>
 </body>
