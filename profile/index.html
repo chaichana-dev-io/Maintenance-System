@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ข้อมูลส่วนตัว | เจริญกรุงคอนโด 3</title>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <script>
+    const userData = JSON.parse(localStorage.getItem('ck3_user'));
+    // 🛡️ ถ้าไม่มีข้อมูล ให้ถอยกลับไปหน้า Login (ถอย 1 ชั้น)
+    if (!userData) window.location.href = "../index.html"; 
+    
+    const ROLE = userData.role.toLowerCase();
+    const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzwiXYmpUymZTepreVpuld-eHA1cbGWZ0ErLVtfD9Insvoo3chXwVsMywG3zjMcJFxZtA/exec";
+  </script>
+  <style>
+    :root { --primary-blue: #1800ad; --deep-blue: #0c005a; --gold-primary: #d4af37; --gold-light: #f1e3a0; --sidebar-width: 280px; }
+    body { font-family: 'Prompt', sans-serif; background-color: #f4f7f6; margin: 0; }
+    
+    /* Sidebar */
+    #sidebar { width: var(--sidebar-width); background: linear-gradient(180deg, var(--deep-blue) 0%, var(--primary-blue) 100%); color: white; position: fixed; height: 100vh; padding: 30px 15px; z-index: 1000; }
+    .sidebar-brand { text-align: center; margin-bottom: 40px; }
+    .sidebar-brand img { max-width: 140px; filter: drop-shadow(0 0 15px rgba(212,175,55,0.4)); }
+    .logo-text { color: var(--gold-light); font-size: 1.1rem; margin-top: 10px; }
+    .nav-item { padding: 14px 20px; color: rgba(255,255,255,0.7); text-decoration: none; display: flex; align-items: center; border-radius: 15px; margin-bottom: 8px; transition: 0.3s; cursor: pointer; }
+    .nav-item:hover, .nav-item.active { background: rgba(255, 255, 255, 0.1); color: var(--gold-light); }
+    .nav-item.active { background: var(--gold-primary); color: var(--deep-blue); font-weight: 600; }
+    
+    #main-content { margin-left: var(--sidebar-width); padding: 40px; min-height: 100vh; display: flex; flex-direction: column; }
+    .form-container { background: white; border-radius: 25px; padding: 40px; box-shadow: 0 4px 20px rgba(0,0,0,0.05); max-width: 900px; }
+    .form-control { border-radius: 12px; padding: 12px 15px; border: 1px solid #eee; background: #f9f9f9; transition: 0.3s; }
+    .form-control:focus { border-color: var(--gold-primary); background: white; outline: none; box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1); }
+    button:disabled { opacity: 0.6; cursor: not-allowed !important; filter: grayscale(1); }
+
+    .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(12, 0, 90, 0.7); backdrop-filter: blur(8px); z-index: 10000; align-items: center; justify-content: center; opacity: 0; transition: 0.3s; }
+    .modal-overlay.show { opacity: 1; display: flex; }
+    .modal-card { background: white; width: 95%; max-width: 400px; padding: 35px; border-radius: 35px; text-align: center; box-shadow: 0 25px 50px rgba(0,0,0,0.4); transform: scale(0.8); transition: 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+    .modal-overlay.show .modal-card { transform: scale(1); }
+    .modal-icon { width: 70px; height: 70px; margin: 0 auto 20px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: white; }
+    .modal-icon.warning { background: #fbc02d; }
+    .modal-icon.primary { background: var(--primary-blue); }
+    .modal-icon.danger { background: #ff5252; }
+
+    .footer { text-align: center; padding: 20px; color: rgba(0,0,0,0.4); font-size: 0.85rem; margin-top: auto; }
+  </style>
+</head>
+<body>
+
+  <aside id="sidebar">
+    <div class="sidebar-brand"><img src="https://img1.pic.in.th/images/logo310c09ae65f63ac1d.png" alt="Logo"><div class="logo-text">ระบบแจ้งซ่อม</div></div>
+    <nav id="dynamic-nav"></nav>
+  </aside>
+
+  <main id="main-content">
+    <header class="mb-4">
+      <h2 style="color: var(--deep-blue); font-weight: 600;">ข้อมูลส่วนตัว</h2>
+      <p class="text-muted">จัดการข้อมูลและรหัสผ่านของคุณ</p>
+    </header>
+
+    <div class="form-container">
+      <div class="row g-4">
+        <div class="col-md-6">
+          <label class="small fw-bold text-muted">ชื่อ-นามสกุล</label>
+          <input type="text" id="p-name" class="form-control" autocomplete="off" spellcheck="false">
+        </div>
+        <div class="col-md-6">
+          <label class="small fw-bold text-muted">เบอร์โทรศัพท์</label>
+          <input type="text" id="p-phone" class="form-control" autocomplete="off" spellcheck="false">
+        </div>
+        <div class="col-12"><hr></div>
+        <div class="col-12"><h5 class="fw-bold" style="color: var(--primary-blue);">เปลี่ยนรหัสผ่าน</h5></div>
+        <div class="col-md-4">
+          <label class="small fw-bold text-muted">รหัสผ่านเดิม</label>
+          <input type="password" id="p-old-pw" class="form-control" autocomplete="new-password">
+        </div>
+        <div class="col-md-4">
+          <label class="small fw-bold text-muted">รหัสผ่านใหม่</label>
+          <input type="password" id="p-new-pw" class="form-control" autocomplete="new-password">
+        </div>
+        <div class="col-md-4">
+          <label class="small fw-bold text-muted">ยืนยันรหัสใหม่</label>
+          <input type="password" id="p-confirm-pw" class="form-control" autocomplete="new-password">
+        </div>
+        <div class="col-12 mt-5 text-end">
+          <button id="btn-save-profile" class="btn btn-primary px-5 py-3 border-0 shadow-sm" style="border-radius:15px; background:var(--primary-blue);" onclick="saveProfile()">
+            บันทึกข้อมูลส่วนตัว
+          </button>
+        </div>
+      </div>
+    </div>
+    <footer class="footer">© 2026 Charoen Krung Condominium 3</footer>
+  </main>
+
+  <div id="lux-modal" class="modal-overlay">
+    <div class="modal-card">
+      <div id="lux-icon-box" class="modal-icon primary"><i id="lux-icon" class="fas fa-check"></i></div>
+      <h4 id="lux-title" class="fw-bold"></h4>
+      <p id="lux-message" class="text-muted mb-4"></p>
+      <div class="d-flex gap-2">
+        <button id="lux-cancel" class="btn btn-light flex-grow-1" style="border-radius:12px" onclick="closeLuxModal()">ยกเลิก</button>
+        <button id="lux-confirm" class="btn btn-primary flex-grow-1 border-0" style="border-radius:12px; background:var(--primary-blue);">ตกลง</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let modalAction = null;
+
+    document.addEventListener('DOMContentLoaded', () => {
+      buildSidebar();
+      document.getElementById('p-name').value = userData.full_name || '';
+      document.getElementById('p-phone').value = userData.phone || '';
+
+      window.addEventListener('keydown', (e) => {
+        const modal = document.getElementById('lux-modal');
+        if (modal.classList.contains('show')) {
+          if (e.key === 'Escape') closeLuxModal();
+          if (e.key === 'Enter') document.getElementById('lux-confirm').click();
+        } else if (e.key === 'Enter') saveProfile();
+      });
+    });
+
+    function buildSidebar() {
+      const nav = document.getElementById('dynamic-nav');
+      let html = '';
+      if (ROLE === 'super_admin' || ROLE === 'admin') {
+        html += `<a href="../admin.html" class="nav-item"><i class="fas fa-th-large me-2"></i> แดชบอร์ด</a>`;
+        html += `<a href="../repairs/" class="nav-item"><i class="fas fa-tools me-2"></i> งานแจ้งซ่อม</a>`;
+        html += `<a href="../users/" class="nav-item"><i class="fas fa-users-cog me-2"></i> จัดการผู้ใช้</a>`;
+      } else if (ROLE === 'technician') {
+        html += `<a href="../tech.html" class="nav-item"><i class="fas fa-tools me-2"></i> งานที่รับผิดชอบ</a>`;
+      } else {
+        html += `<a href="../resident.html" class="nav-item"><i class="fas fa-plus-circle me-2"></i> แจ้งซ่อมใหม่</a>`;
+      }
+      html += `<a href="./" class="nav-item active"><i class="fas fa-user-circle me-2"></i> ข้อมูลส่วนตัว</a>`;
+      html += `<hr style="border-color: rgba(255,255,255,0.1); margin: 20px 0;">`;
+      html += `<div class="nav-item text-warning" onclick="confirmLogout()"><i class="fas fa-sign-out-alt me-2"></i> ออกจากระบบ</div>`;
+      nav.innerHTML = html;
+    }
+
+    async function saveProfile() {
+      const btn = document.getElementById('btn-save-profile');
+      const name = document.getElementById('p-name').value;
+      const phone = document.getElementById('p-phone').value;
+      const oldPw = document.getElementById('p-old-pw').value;
+      const newPw = document.getElementById('p-new-pw').value;
+      const confirmPw = document.getElementById('p-confirm-pw').value;
+
+      if (!name) return showNotice("ผิดพลาด", "กรุณาระบุชื่อ-นามสกุล", "warning");
+      if (newPw && newPw !== confirmPw) return showNotice("ผิดพลาด", "รหัสผ่านใหม่ไม่ตรงกัน", "danger");
+
+      btn.disabled = true;
+      try {
+        const res = await fetch(WEB_APP_URL, {
+          method: 'POST',
+          body: JSON.stringify({ action: 'updateProfile', userId: userData.user_id, fullName: name, phone: phone, oldPassword: oldPw, newPassword: newPw })
+        });
+        const r = await res.json();
+        if (r.success) {
+          userData.full_name = name;
+          userData.phone = phone;
+          localStorage.setItem('ck3_user', JSON.stringify(userData));
+          showNotice("สำเร็จ", r.message, "primary", () => { if (r.logout) logout(); else location.reload(); });
+        } else {
+          showNotice("ไม่สำเร็จ", r.message, "danger");
+        }
+      } catch (e) {
+        showNotice("ขัดข้อง", "การเชื่อมต่อล้มเหลว", "danger");
+      } finally { btn.disabled = false; }
+    }
+
+    function showNotice(title, msg, type, onConfirm = null) {
+      const m = document.getElementById('lux-modal');
+      document.getElementById('lux-title').innerText = title;
+      document.getElementById('lux-message').innerText = msg;
+      document.getElementById('lux-icon-box').className = 'modal-icon ' + type;
+      document.getElementById('lux-icon').className = 'fas ' + (type === 'danger' ? 'fa-exclamation-triangle' : 'fa-check');
+      document.getElementById('lux-cancel').style.display = 'none';
+      m.style.display = 'flex';
+      setTimeout(() => m.classList.add('show'), 10);
+      modalAction = onConfirm;
+    }
+
+    function openLuxModal(opts) {
+      const m = document.getElementById('lux-modal');
+      document.getElementById('lux-title').innerText = opts.title;
+      document.getElementById('lux-message').innerText = opts.message;
+      document.getElementById('lux-icon-box').className = 'modal-icon ' + (opts.type || 'primary');
+      document.getElementById('lux-cancel').style.display = 'block';
+      m.style.display = 'flex';
+      setTimeout(() => m.classList.add('show'), 10);
+      modalAction = opts.onConfirm;
+    }
+
+    function closeLuxModal() {
+      const m = document.getElementById('lux-modal');
+      m.classList.remove('show');
+      setTimeout(() => m.style.display = 'none', 300);
+    }
+
+    document.getElementById('lux-confirm').onclick = () => { if(modalAction) modalAction(); closeLuxModal(); };
+    function confirmLogout() { openLuxModal({ title: "ออกจากระบบ?", message: "ต้องการสิ้นสุดการทำงานใช่หรือไม่?", type: "warning", onConfirm: () => logout() }); }
+    function logout() { localStorage.removeItem('ck3_user'); window.location.href = "../index.html"; }
+  </script>
+</body>
+</html>
