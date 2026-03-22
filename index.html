@@ -35,10 +35,9 @@
   <div id="lux-modal" class="modal-overlay">
     <div class="modal-card">
       <div id="lux-icon-box" class="modal-icon primary"><i id="lux-icon" class="fas fa-check"></i></div>
-      <h3 id="lux-title" style="color: var(--gold-light);">ยินดีต้อนรับ</h3>
+      <h3 id="lux-title" style="color: var(--gold-light);">แจ้งเตือน</h3>
       <p id="lux-message" style="color: white; font-size: 1.1rem;"></p>
       <div class="d-flex gap-2 mt-4">
-        <button id="lux-cancel" class="btn btn-outline-light flex-grow-1" style="border-radius:30px; display:none;" onclick="closeModal('lux-modal')">ยกเลิก</button>
         <button id="lux-confirm" class="btn btn-login flex-grow-1" style="margin-top:0; border-radius:30px;">ตกลง</button>
       </div>
     </div>
@@ -46,7 +45,7 @@
 
   <div class="login-wrapper">
     <div class="logo-container"><img src="https://img1.pic.in.th/images/logo310c09ae65f63ac1d.png" alt="Logo"></div>
-    <div class="system-title">ระบบแจ้งซ่อม</div>
+    <div class="system-title">เจริญกรุงคอนโดมิเนียม 3</div>
     <form id="loginForm" autocomplete="off">
       <div class="mb-3 text-start">
         <label style="color:var(--gold-primary); font-size:0.8rem; margin-left:5px;">USERNAME</label>
@@ -63,14 +62,10 @@
   <script>
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzwiXYmpUymZTepreVpuld-eHA1cbGWZ0ErLVtfD9Insvoo3chXwVsMywG3zjMcJFxZtA/exec";
     let modalAction = null;
-    let currentUser = null;
 
-    const loginForm = document.getElementById('loginForm');
-    const btnLogin = document.getElementById('btn-login');
-
-    loginForm.onsubmit = async (e) => {
+    document.getElementById('loginForm').onsubmit = async (e) => {
       e.preventDefault();
-      btnLogin.disabled = true;
+      document.getElementById('btn-login').disabled = true;
       document.getElementById('loader-overlay').style.display = 'flex';
 
       try {
@@ -82,51 +77,43 @@
         document.getElementById('loader-overlay').style.display = 'none';
 
         if (result.success) {
-          currentUser = result;
           localStorage.setItem('ck3_user', JSON.stringify(result));
-          showNotice("สำเร็จ", "คุณ " + result.full_name + " เข้าสู่ระบบสำเร็จ", "primary", () => redirectToApp());
+          showNotice("สำเร็จ", "คุณ " + result.full_name + " เข้าสู่ระบบสำเร็จ", "primary", () => {
+            const role = result.role.toLowerCase();
+            if (role === 'admin' || role === 'super_admin') window.location.href = "admin.html";
+            else if (role === 'technician') window.location.href = "tech.html";
+            else window.location.href = "resident.html";
+          });
         } else {
           showNotice("ไม่สำเร็จ", result.message, "danger");
-          btnLogin.disabled = false;
+          document.getElementById('btn-login').disabled = false;
         }
       } catch (err) {
         showNotice("ขัดข้อง", "การเชื่อมต่อเซิร์ฟเวอร์ล้มเหลว", "danger");
-        btnLogin.disabled = false;
+        document.getElementById('btn-login').disabled = false;
       }
     };
-
-    function redirectToApp() {
-      const role = currentUser.role.toLowerCase();
-      if (role === 'admin' || role === 'super_admin') window.location.href = "admin.html";
-      else if (role === 'technician') window.location.href = "tech.html";
-      else window.location.href = "resident.html";
-    }
 
     function showNotice(title, msg, type, onConfirm = null) {
       const m = document.getElementById('lux-modal');
       document.getElementById('lux-title').innerText = title;
       document.getElementById('lux-message').innerText = msg;
       document.getElementById('lux-icon-box').className = 'modal-icon ' + type;
-      document.getElementById('lux-icon').className = 'fas ' + (type === 'danger' ? 'fa-exclamation-triangle' : 'fa-check');
-      document.getElementById('lux-cancel').style.display = 'none';
       m.style.display = 'flex';
       setTimeout(() => m.classList.add('show'), 10);
       modalAction = onConfirm;
     }
 
-    function closeModal(id) {
-      const m = document.getElementById(id);
+    document.getElementById('lux-confirm').onclick = () => {
+      if(modalAction) modalAction();
+      const m = document.getElementById('lux-modal');
       m.classList.remove('show');
       setTimeout(() => m.style.display = 'none', 300);
-    }
-
-    document.getElementById('lux-confirm').onclick = () => { if(modalAction) modalAction(); closeModal('lux-modal'); };
+    };
 
     window.addEventListener('keydown', (e) => {
-      const modal = document.getElementById('lux-modal');
-      if (modal.classList.contains('show')) {
-        if (e.key === 'Enter') document.getElementById('lux-confirm').click();
-        if (e.key === 'Escape') closeModal('lux-modal');
+      if (document.getElementById('lux-modal').classList.contains('show')) {
+        if (e.key === 'Enter' || e.key === 'Escape') document.getElementById('lux-confirm').click();
       }
     });
   </script>
